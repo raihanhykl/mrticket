@@ -4,6 +4,7 @@ import { auth } from '@/auth';
 import Link from 'next/link';
 import React from 'react';
 // import NavbarButton from './navbar/button.navbar';
+import NavbarButton from './navbar/button.navbar';
 
 type Props = {};
 
@@ -58,19 +59,15 @@ export default async function Navbar({}: Props) {
                   <p>{session ? session.user.first_name : 'Daftar'}</p>
                 </div>
               </Link>
-              {/* {session ? ( */}
-              <Link href={'/login'}>
-                <div className="content-center border-[1px] rounded-md p-2">
-                  <p>Masuk</p>
-                </div>
-              </Link>
-              {/* ) : ( */}
-              {/* <Link href={'/login'}>
-                <div className="content-center border-[1px] rounded-md p-2">
-                  <p>Masuk</p>
-                </div>
-              </Link> */}
-              {/* )} */}
+              {session ? (
+                <NavbarButton />
+              ) : (
+                <Link href={'/login'}>
+                  <div className="content-center border-[1px] rounded-md p-2">
+                    <p>Masuk</p>
+                  </div>
+                </Link>
+              )}
             </div>
           </div>
         </div>

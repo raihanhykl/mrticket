@@ -7,7 +7,8 @@ export const loginAction = async (values: {
 }) => {
   try {
     await signIn('credentials', {
-      redirect: false,
+      redirect: true,
+      redirectTo: '/',
       email: values.email!,
       password: values.password!,
     });
@@ -20,6 +21,6 @@ export const loginAction = async (values: {
   }
 };
 
-// export const actionLogout = async () => {
-//   return await signOut({ redirect: true, redirectTo: '/login' });
-// };
+export const actionLogout = async () => {
+  return await signOut({ redirect: true, redirectTo: '/login' });
+};

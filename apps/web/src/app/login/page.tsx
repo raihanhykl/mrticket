@@ -1,7 +1,7 @@
 'use client';
 import { loginAction } from '@/action/auth.action';
 import { log } from 'console';
-import { useRouter } from 'next/navigation';
+import { redirect, useRouter } from 'next/navigation';
 import React, { useState } from 'react';
 
 type Props = {};
@@ -21,11 +21,11 @@ export default function page({}: Props) {
     console.log(data);
     await loginAction(data)
       .then((res) => {
-        alert('Login Success page');
-        router.push('/');
+        console.log(res);
+        // router.push('/');
       })
       .catch((err) => {
-        alert(err as Error);
+        throw err;
       });
   };
   return (

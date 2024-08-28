@@ -21,11 +21,15 @@ export class AuthSerivce {
   static async login(req: Request) {
     const { email, password } = req.body;
 
+    console.log(email + password + email, 'ini DI AUTH SERVICE');
+
     const user = (await prisma.user.findUnique({
       where: {
         email,
       },
     })) as IUser;
+
+    // console.log(user);
 
     if (!user) {
       throw new ErrorHandler('User not found', 400);

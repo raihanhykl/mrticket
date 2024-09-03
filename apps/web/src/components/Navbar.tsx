@@ -14,7 +14,7 @@ export default async function Navbar({}: Props) {
 
   return (
     <>
-      <div className="flex px-[30px] py-[10px] gap-5 bg-[#003899] text-white justify-end text-[12px]">
+      <div className="hidden md:flex px-[30px] py-[10px] gap-5 bg-[#003899] text-white justify-end text-[12px]">
         <a href="">Tentang Loket</a>
         <a href="">Mulai Jadi Event Creator</a>
         <a href="">Biaya</a>
@@ -24,18 +24,18 @@ export default async function Navbar({}: Props) {
       </div>
 
       <div className=" bg-[#152955] text-white px-[40px] py-[16px]  text-sm">
-        <div className="flex justify-between">
+        <div className="flex justify-between content-center items-center">
           <Link href={'/'}>
             <img
               src="https://assets.loket.com/images/logo-loket-white.png"
               alt=""
-              className="h-8"
+              className="h-6 md:h-8 "
             />
           </Link>
 
-          <div className="content-center">search</div>
+          <div className="hidden md:flex content-center">search</div>
 
-          <div className="flex gap-5">
+          <div className="hidden md:flex gap-5">
             <div className="content-center flex items-center gap-1">
               <img
                 src="https://assets.loket.com/web/assets/img/ic_schedule.svg"
@@ -71,7 +71,7 @@ export default async function Navbar({}: Props) {
             </div>
           </div>
         </div>
-        <div className="flex gap-4 justify-center bg-[#152955] text-white text-sm">
+        <div className="hidden md:flex gap-4 justify-center bg-[#152955] text-white text-sm">
           <Link href={''}>#LoketMart</Link>
           <Link href={''}>#Promo_Indodana</Link>
           <Link href={''}>#LOKETScreen</Link>

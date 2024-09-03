@@ -26,24 +26,23 @@ export const actionLogout = async () => {
   return await signOut({ redirect: true, redirectTo: '/login' });
 };
 
-export const actionRegister = async (
-  values: {
-    email: string;
-    password: string;
-    phone_number: string;    
-    first_name: string;
-    last_name: string;
-    f_referral_code?: string;
-    roleId: number;
-  },
-) => {
+export const actionRegister = async (values: {
+  email: string;
+  password: string;
+  phone_number: string;
+  first_name: string;
+  last_name: string;
+  f_referral_code?: string;
+  roleId: number;
+}) => {
   try {
     await api.post('/auth/v2', values);
+
     return {
       message: 'Register Berhasil',
     };
-  } catch (error) {
-    console.log(error);
+  } catch (error: any) {
+    // console.log(error instanceof Error && error.message);
 
     throw new Error('Register Gagal');
   }

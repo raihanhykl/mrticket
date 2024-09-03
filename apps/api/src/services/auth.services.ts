@@ -52,6 +52,30 @@ export class AuthSerivce {
       f_referral_code,
       roleId,
     } = req.body;
+
+    if (f_referral_code) {
+      try {
+        const referral = (await prisma.user.findFirst({
+          where: {
+            referral_code: f_referral_code,
+          },
+        })) as IUser;
+
+        await prisma.user.update({
+          where: {
+            id: Number(referral?.id),
+          },
+          data: {
+            poin: {
+              increment: 10000,
+            },
+          },
+        });
+      } catch (error) {
+        throw new ErrorHandler('Invalid referral code', 400);
+      }
+    }
+
     const hashPassword = await hash(password, 10);
     const data: Prisma.UserCreateInput = {
       first_name,

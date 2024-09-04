@@ -61,6 +61,10 @@ export class AuthSerivce {
           },
         })) as IUser;
 
+        if (!referral) {
+          throw new ErrorHandler('Referral code not found anjing', 400);
+        }
+
         await prisma.user.update({
           where: {
             id: Number(referral?.id),
@@ -72,7 +76,7 @@ export class AuthSerivce {
           },
         });
       } catch (error) {
-        throw new ErrorHandler('Invalid referral code', 400);
+        throw error;
       }
     }
 

@@ -46,6 +46,8 @@ export const registerSchema = z.object({
     .refine(validator.isMobilePhone, {
       message: 'Mohon masukan nomor telepon yang valid.',
     }),
-  f_referral_code: z.string().max(7, { message: 'Invalid referral code.' }),
+  f_referral_code: z
+    .string()
+    .max(7, { message: 'Masukkan referral code yang valid.' }),
   roleId: z.number(),
 });

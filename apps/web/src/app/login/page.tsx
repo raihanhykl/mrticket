@@ -23,6 +23,7 @@ export default function page({}: Props) {
 
   const {
     register,
+    setError,
     formState: { errors },
     handleSubmit,
   } = form;
@@ -36,7 +37,10 @@ export default function page({}: Props) {
         // router.push('/');
       })
       .catch((err) => {
-        throw err;
+        setError('email', {
+          type: 'manual',
+          message: err.message,
+        });
       });
   };
   return (

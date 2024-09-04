@@ -27,21 +27,12 @@ export default function page({}: Props) {
   });
   const {
     register,
+    setError,
     formState: { errors },
     handleSubmit,
   } = form;
 
   const onSubmit = async (values: z.infer<typeof registerSchema>) => {
-    // const data = {
-    //   email,
-    //   password,
-    //   phone_number,
-    //   first_name,
-    //   last_name,
-    //   f_referral_code,
-    //   roleId: Number(roleId),
-    // };
-    // console.log(values);
     await actionRegister(values)
       .then((res) => {
         console.log(res);
@@ -49,7 +40,10 @@ export default function page({}: Props) {
         router.push('/login');
       })
       .catch((err) => {
-        throw err;
+        setError('f_referral_code', {
+          type: 'manual',
+          message: err.message,
+        });
       });
   };
 

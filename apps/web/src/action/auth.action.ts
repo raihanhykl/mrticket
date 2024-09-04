@@ -1,6 +1,7 @@
 'use server';
 import { signIn, signOut } from '@/auth';
 import { api } from '@/config/axios.config';
+import axios, { AxiosError } from 'axios';
 
 export const loginAction = async (values: {
   email: string;
@@ -18,7 +19,7 @@ export const loginAction = async (values: {
       message: 'Login Success',
     };
   } catch (e) {
-    throw e;
+    throw new Error('Login Gagal');
   }
 };
 
@@ -36,14 +37,16 @@ export const actionRegister = async (values: {
   roleId: number;
 }) => {
   try {
-    await api.post('/auth/v2', values);
+    const res = await api.post('/auth/v2', values);
 
     return {
-      message: 'Register Berhasil',
+      message: res.data.message,
     };
-  } catch (error: any) {
-    // console.log(error instanceof Error && error.message);
-
+  } catch (error: unknown) {
+    if (error instanceof AxiosError) {
+      const errorMessage = error.response?.data.message;
+      throw new Error(errorMessage);
+    }
     throw new Error('Register Gagal');
   }
 };

@@ -12,8 +12,6 @@ import { ErrorMessage } from '@hookform/error-message';
 type Props = {};
 
 export default function page({}: Props) {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
   const router = useRouter();
 
   const form = useForm<z.infer<typeof loginSchema>>({
@@ -27,19 +25,17 @@ export default function page({}: Props) {
     formState: { errors },
     handleSubmit,
   } = form;
+
   const onSubmit = async (values: z.infer<typeof loginSchema>) => {
-    event?.preventDefault();
-    const data = { email, password };
-    console.log(data);
     await loginAction(values)
       .then((res) => {
         console.log(res);
         // router.push('/');
       })
       .catch((err) => {
-        setError('email', {
+        setError('password', {
           type: 'manual',
-          message: err.message,
+          message: 'check your email and password',
         });
       });
   };

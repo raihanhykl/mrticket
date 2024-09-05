@@ -37,13 +37,13 @@ export const actionRegister = async (values: {
   roleId: number;
 }) => {
   try {
-    const res = await api.post('/auth/v2', values);
+    await api.post('/auth/v2', values);
 
     return {
-      message: res.data.message,
+      message: 'Register Berhasil',
     };
   } catch (error: unknown) {
-    if (error instanceof AxiosError) {
+    if (axios.isAxiosError(error)) {
       const errorMessage = error.response?.data.message;
       throw new Error(errorMessage);
     }

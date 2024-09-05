@@ -11,6 +11,7 @@ import cors from 'cors';
 import { PORT } from './config';
 import { AuthRouter } from './routers/auth.routers';
 import { ErrorHandler, responseHandle } from './helpers/response';
+import { AdminRouter } from './routers/admin.routers';
 
 export default class App {
   private app: Express;
@@ -57,7 +58,7 @@ export default class App {
       res.send(`Hello, Purwadhika Student API!`);
     });
     this.app.use('/api/auth', new AuthRouter().getRouter());
-    // this.app.use('/api/categories', new CategoryRouter().getRouter());
+    this.app.use('/api/admin', new AdminRouter().getRouter());
     // this.app.use('/api/products', new ProductRouter().getRouter());
   }
 

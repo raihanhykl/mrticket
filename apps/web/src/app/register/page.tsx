@@ -1,5 +1,8 @@
 'use client';
 import { actionRegister } from '@/action/auth.action';
+import { Toast } from '@/components/ui/toast';
+import { useToast } from '@/hooks/use-toast';
+
 import { registerSchema } from '@/schemas/auth.schemas';
 import { ErrorMessage } from '@hookform/error-message';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -11,16 +14,8 @@ import { z } from 'zod';
 type Props = {};
 
 export default function page({}: Props) {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [phone_number, setPhoneNumber] = useState('');
-  const [first_name, setFirstName] = useState('');
-  const [last_name, setLastName] = useState('');
-  const [f_referral_code, setFReferralCode] = useState('');
-  const [roleId, setRoleId] = useState(1);
+  const { toast } = useToast();
   const router = useRouter();
-  const roleCustomer = 1;
-  const roleAdmin = 2;
   const form = useForm<z.infer<typeof registerSchema>>({
     resolver: zodResolver(registerSchema),
     defaultValues: {},
@@ -35,8 +30,9 @@ export default function page({}: Props) {
   const onSubmit = async (values: z.infer<typeof registerSchema>) => {
     await actionRegister(values)
       .then((res) => {
-        console.log(res);
-        // router.push('/');
+        toast({
+          description: res.message,
+        });
         router.push('/login');
       })
       .catch((err) => {
@@ -44,6 +40,11 @@ export default function page({}: Props) {
           type: 'manual',
           message: err.message,
         });
+        toast({
+          description: err.message,
+        });
+
+        console.log(err);
       });
   };
 

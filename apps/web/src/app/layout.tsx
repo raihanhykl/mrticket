@@ -5,6 +5,7 @@ import { Header } from '@/components/Header';
 import { Footer } from '@/components/Footer';
 import Navbar from '@/components/Navbar';
 import { ThemeModeScript } from 'flowbite-react';
+import { Toaster } from '@/components/ui/toaster';
 
 const inter = Inter({ subsets: ['latin'] });
 
@@ -27,6 +28,7 @@ export default function RootLayout({
         <center>
           <Navbar />
           {children}
+          <Toaster />
           <Footer />
         </center>
       </body>

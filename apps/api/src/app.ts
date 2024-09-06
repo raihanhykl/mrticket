@@ -59,6 +59,7 @@ export default class App {
     });
     this.app.use('/api/auth', new AuthRouter().getRouter());
     this.app.use('/api/admin', new AdminRouter().getRouter());
+    // this.app.use('/api/transaction', new TransactionRouter().getRouter());
     // this.app.use('/api/products', new ProductRouter().getRouter());
   }
 

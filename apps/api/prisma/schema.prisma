@@ -34,6 +34,7 @@ model User {
   voucher         Voucher[]
   user_voucher    UserVoucher[]
   transaction     Transaction[]
+  cart            Cart[]
 
   Role   Role? @relation(fields: [roleId], references: [id])
   roleId Int?
@@ -76,6 +77,7 @@ model Ticket {
   disc_start_date    DateTime?
   disc_end_date      DateTime?
   transaction_detail TransactionDetail[]
+  cart               Cart[]
 
   Event   Event? @relation(fields: [eventId], references: [id])
   eventId Int?
@@ -154,4 +156,15 @@ model TransactionDetail {
   transactionId Int?
   Ticket        Ticket?      @relation(fields: [ticketId], references: [id])
   ticketId      Int?
+}
+
+model Cart {
+  id       Int @id @default(autoincrement())
+  quantity Int
+
+  User   User? @relation(fields: [userId], references: [id])
+  userId Int?
+
+  Ticket   Ticket? @relation(fields: [ticketId], references: [id])
+  ticketId Int?
 }

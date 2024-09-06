@@ -7,7 +7,7 @@ export class AdminService {
   static async createEvent(req: Request) {
     try {
       console.log(req.body);
-      
+
       const {
         event_name,
         event_desc,
@@ -39,6 +39,35 @@ export class AdminService {
       return await prisma.event.create({ data });
     } catch (error) {
       throw new ErrorHandler('Failed to create event', 400);
+    }
+  }
+  static async createTicket(req: Request) {
+    try {
+      const {
+        ticket_type,
+        price,
+        stock,
+        eventId,
+        discount_price,
+        disc_start_date,
+        disc_end_date,
+      } = req.body;
+      const data: Prisma.TicketCreateInput = {
+        ticket_type,
+        price,
+        stock,
+        discount_price,
+        Event: {
+          connect: {
+            id: eventId,
+          },
+        },
+        disc_start_date: disc_start_date || null,
+        disc_end_date: disc_end_date || null,
+      };
+      return await prisma.ticket.create({ data });
+    } catch (error) {
+      throw new ErrorHandler('Failed to create ticket', 400);
     }
   }
 }

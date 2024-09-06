@@ -9,6 +9,7 @@ export class AdminRouter {
   }
   private routes() {
     this.router.post('/create-event', this.adminController.createEvent);
+    this.router.post('/create-ticket', this.adminController.createTicket);
   }
   public getRouter() {
     return this.router;

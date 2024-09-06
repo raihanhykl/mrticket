@@ -3,7 +3,8 @@ import { auth } from '@/auth';
 import { api } from '@/config/axios.config';
 import axios, { AxiosError } from 'axios';
 
-export const addEventAction = async (values: {
+export const addEventAction = async (
+  values: {
     // userId: string;
     event_name: string;
     event_desc: string;
@@ -13,13 +14,28 @@ export const addEventAction = async (values: {
     end_date: Date;
     start_time: string;
     end_time: string;
-}) => {
-  const session = await auth()
+  },
+  tickets: {
+    ticket_type: string;
+    price: number;
+    stock: number;
+    discount_price?: number | undefined;
+    disc_start_date?: Date | undefined;
+    disc_end_date?: Date | undefined;
+  }[],
+) => {
+  const session = await auth();
   try {
-    const data = {...values, userId: Number(session?.user.id)}
+    const data = { ...values, userId: Number(session?.user.id) };
     console.log(data);
-    
-    await api.post('/admin/create-event', data);
+
+    const res = await api.post('/admin/create-event', values);
+    tickets.map(async (ticket) => {
+      await api.post('/admin/create-ticket', {
+        ...ticket,
+        eventId: res.data.data.id,
+      });
+    });
     return {
       message: 'Event Berhasil Ditambahkan',
     };

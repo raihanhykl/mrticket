@@ -40,9 +40,12 @@ export default function Page() {
 
   const onSubmit = async (values: z.infer<typeof eventSchema>) => {
     try {
-      console.log(values);
-      const res = await addEventAction(values);
-      
+      const ticket = values.tickets;
+      delete values.tickets;
+      // const dor = values.location;
+
+      if (ticket) await addEventAction(values, ticket);
+
       // Handle success (e.g., redirect or show success message)
     } catch (err) {
       console.error(err);

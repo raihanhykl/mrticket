@@ -6,6 +6,8 @@ import { Request } from 'express';
 export class AdminService {
   static async createEvent(req: Request) {
     try {
+      console.log(req.body);
+      
       const {
         event_name,
         event_desc,

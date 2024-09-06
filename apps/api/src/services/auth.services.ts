@@ -86,6 +86,7 @@ export class AuthSerivce {
         };
 
         const newUser = await prisma.user.create({ data });
+
         await prisma.userVoucher.create({
           data: {
             userId: newUser.id,

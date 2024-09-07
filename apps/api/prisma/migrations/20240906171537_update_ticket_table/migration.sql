@@ -9,7 +9,6 @@ CREATE TABLE `Cart` (
     `quantity` INTEGER NOT NULL,
     `userId` INTEGER NULL,
     `ticketId` INTEGER NULL,
-
     PRIMARY KEY (`id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 

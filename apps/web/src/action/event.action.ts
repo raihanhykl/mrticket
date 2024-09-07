@@ -29,7 +29,7 @@ export const addEventAction = async (
     const data = { ...values, userId: Number(session?.user.id) };
     console.log(data);
 
-    const res = await api.post('/admin/create-event', values);
+    const res = await api.post('/admin/create-event', data);
     tickets.map(async (ticket) => {
       await api.post('/admin/create-ticket', {
         ...ticket,

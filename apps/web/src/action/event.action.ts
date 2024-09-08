@@ -14,6 +14,7 @@ export const addEventAction = async (
     end_date: Date;
     start_time: string;
     end_time: string;
+    image: string | undefined;
   },
   tickets: {
     ticket_type: string;

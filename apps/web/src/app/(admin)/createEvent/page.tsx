@@ -4,11 +4,13 @@ import { addEventAction } from '@/action/event.action';
 import { eventSchema } from '@/schemas/event.schemas';
 import { ErrorMessage } from '@hookform/error-message';
 import { zodResolver } from '@hookform/resolvers/zod';
-import React from 'react';
+import React, { useState } from 'react';
 import { useForm, useFieldArray } from 'react-hook-form';
 import { z } from 'zod';
 
 export default function Page() {
+
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const form = useForm<z.infer<typeof eventSchema>>({
     resolver: zodResolver(eventSchema),
     defaultValues: {
@@ -43,13 +45,16 @@ export default function Page() {
       const ticket = values.tickets;
       delete values.tickets;
       // const dor = values.location;
+      const data = {...values, image: selectedFile?.name};
 
-      if (ticket) await addEventAction(values, ticket);
+      console.log(data);
+      
+      // if(selectedFile && ticket) await addEventAction(data, ticket);
+      if (ticket) await addEventAction(data, ticket);
 
-      // Handle success (e.g., redirect or show success message)
     } catch (err) {
       console.error(err);
-      // Handle error (e.g., show error message)
+
     }
   };
 
@@ -76,7 +81,14 @@ export default function Page() {
             Add Event
           </p>
           <form className="grid gap-3" onSubmit={handleSubmit(onSubmit)}>
-            {/* Event Name */}
+            <p>Event Image</p>
+              <input
+                type="file"
+                accept="image/*"
+                onChange={(e) => setSelectedFile(e.target.files?.[0] || null)} 
+                // {...register("image")}
+                className="border w-full bg-[#F9FAFB] rounded-lg"
+              />
             <div>
               <p>Event Name</p>
               <input

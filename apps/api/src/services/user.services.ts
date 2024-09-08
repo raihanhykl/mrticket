@@ -2,7 +2,7 @@ import prisma from '@/prisma';
 import { Prisma } from '@prisma/client';
 import { Request } from 'express';
 
-export class TransactionService {
+export class UserService {
   static async addToCart(req: Request) {
     try {
       const { userId, ticketId, quantity } = req.body;

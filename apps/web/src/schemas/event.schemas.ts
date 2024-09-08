@@ -34,4 +34,7 @@ export const eventSchema = z.object({
     )
     .nonempty('At least one ticket is required')
     .optional(),
+    // image: z.custom<File>((file) => file instanceof File, {
+    //   message: 'Event image is required',
+    // }),
 });

@@ -4,10 +4,50 @@ import { Prisma } from '@prisma/client';
 import { Request } from 'express';
 
 export class AdminService {
+
+  static async getEvent(req: Request){
+    try {
+      
+      const data = await prisma.event.findMany({})
+      return data
+    } catch (error) {
+      throw new ErrorHandler("Failed to get data", 400)
+    }
+  }
+
+  static async getEventDetail(req: Request){
+    try {
+      
+      const data = await prisma.event.findUnique({
+        where: {
+          id: Number(req.params.event_id)
+        }
+      })
+      return data
+    } catch (error) {
+      throw new ErrorHandler("Failed to get data", 400)
+    }
+  }
+
+  static async getEventTicket(req: Request){
+    try {
+      
+      const data = await prisma.ticket.findMany({
+        where: {
+          eventId: Number(req.params.event_id)
+        }
+      })
+      return data
+    } catch (error) {
+      throw new ErrorHandler("Failed to get data", 400)
+    }
+  }
   static async createEvent(req: Request) {
     try {
       console.log(req.body);
+      console.log(req.file, 'ini req file');
 
+      // const image = req.file?.filename;
       const {
         event_name,
         event_desc,
@@ -35,6 +75,11 @@ export class AdminService {
           },
         },
       };
+
+      if (req?.file) {
+        const image = req.file;
+        data.image = image.filename;
+      }
 
       return await prisma.event.create({ data });
     } catch (error) {

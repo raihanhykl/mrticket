@@ -22,27 +22,26 @@ export default function page({}: Props) {
   const {
     register,
     setError,
-    formState: { errors },
+    formState: { errors, isSubmitting },
     handleSubmit,
   } = form;
 
-  const [isSubmitting, setIsSubmitting] = useState(false);
+  // const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const onSubmit = async (values: z.infer<typeof loginSchema>) => {
-    setIsSubmitting(true);  // Set ke true ketika proses dimulai
-    await loginAction(values)
+  const onSubmit = (values: z.infer<typeof loginSchema>) => {
+    // setIsSubmitting(true);  // Set ke true ketika proses dimulai
+    loginAction(values)
       .then((res) => {
-        console.log(res,' ini di page');
-        router.push('/');
+        // console.log(res, ' ini di page');
+        // router.push('/');
       })
       .catch((err) => {
+        console.log(err);
+
         setError('password', {
           type: 'manual',
           message: 'check your email and password',
         });
-      })
-      .finally(() => {
-        setIsSubmitting(false);
       });
   };
   return (
@@ -97,7 +96,7 @@ export default function page({}: Props) {
                   disabled={isSubmitting}
                   className="bg-[#0049cc] text-white p-2 my-3 rounded-lg"
                 >
-                  {isSubmitting ? "Logging in..." : "Login"}
+                  {isSubmitting ? 'Logging in...' : 'Login'}
                 </button>
               </form>
             </div>

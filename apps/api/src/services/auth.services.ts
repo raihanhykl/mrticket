@@ -18,7 +18,7 @@ export class AuthSerivce {
       },
     })) as IUser;
 
-    // console.log(user);
+    console.log(user);
 
     if (!user) {
       throw new ErrorHandler('User not found', 400);

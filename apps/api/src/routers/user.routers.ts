@@ -9,8 +9,10 @@ export class UserRouter {
     this.routes();
   }
 
+
   private routes() {
     this.router.post('/addToCart', this.userController.addToCart);
+    this.router.get('/cart/:user_id', this.userController.getCart);
   }
   public getRouter() {
     return this.router;

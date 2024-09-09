@@ -9,7 +9,6 @@ import { useForm, useFieldArray } from 'react-hook-form';
 import { z } from 'zod';
 
 export default function Page() {
-
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const form = useForm<z.infer<typeof eventSchema>>({
     resolver: zodResolver(eventSchema),
@@ -45,16 +44,31 @@ export default function Page() {
       const ticket = values.tickets;
       delete values.tickets;
       // const dor = values.location;
-      const data = {...values, image: selectedFile?.name};
 
-      console.log(data);
-      
+      if (!selectedFile) {
+        alert("Please upload an image file");
+        return;
+      }
+
+      const formData = new FormData();
+      formData.append('event_name', values.event_name);
+      formData.append('event_desc', values.event_desc);
+      formData.append('category', values.category);
+      formData.append('location', values.location);
+      formData.append('start_date', values.start_date.toISOString());
+      formData.append('end_date', values.end_date.toISOString());
+      formData.append('start_time', values.start_time);
+      formData.append('end_time', values.end_time);
+      formData.append('image', selectedFile);
+
+      // const data = { ...values, image: selectedFile };
+
+      console.log(formData, 'kiw');
+
       // if(selectedFile && ticket) await addEventAction(data, ticket);
-      if (ticket) await addEventAction(data, ticket);
-
+      if (ticket) await addEventAction(formData, ticket);
     } catch (err) {
       console.error(err);
-
     }
   };
 
@@ -82,13 +96,13 @@ export default function Page() {
           </p>
           <form className="grid gap-3" onSubmit={handleSubmit(onSubmit)}>
             <p>Event Image</p>
-              <input
-                type="file"
-                accept="image/*"
-                onChange={(e) => setSelectedFile(e.target.files?.[0] || null)} 
-                // {...register("image")}
-                className="border w-full bg-[#F9FAFB] rounded-lg"
-              />
+            <input
+              type="file"
+              accept="image/*"
+              onChange={(e) => setSelectedFile(e.target.files?.[0] || null)}
+              // {...register("image")}
+              className="border w-full bg-[#F9FAFB] rounded-lg"
+            />
             <div>
               <p>Event Name</p>
               <input

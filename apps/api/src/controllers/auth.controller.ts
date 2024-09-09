@@ -6,6 +6,8 @@ export class AuthController {
   async login(req: Request, res: Response, next: NextFunction) {
     try {
       const data = await AuthSerivce.login(req);
+      console.log(data);
+
       return res.send(responseHandle('login success', data));
     } catch (error) {
       next(error);

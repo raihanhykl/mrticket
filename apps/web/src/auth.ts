@@ -18,13 +18,19 @@ export const { signIn, signOut, handlers, auth } = NextAuth({
           if (!credentials || !credentials?.email || !credentials?.password)
             return null;
 
+          console.log(credentials);
+
           const res = await api.post('/auth/v1', {
             email: credentials?.email,
             password: credentials?.password,
           });
+
           const token = res.data.data;
+
           if (!token) throw new Error("Can't login");
+
           const user = jwtDecode<User>(token);
+
           return user;
         } catch (error) {
           return null;

@@ -25,4 +25,24 @@ export class UserService {
       throw new Error('Failed add to cart!');
     }
   }
+
+  static async getCart(req: Request) {
+    try {
+      // const { userId } = req.body;
+      return await prisma.cart.findMany({
+        where: {
+          userId: Number(req.params.user_id)
+        },
+        include: {
+          Ticket: {
+            include: {
+              Event: true,
+            },
+          }
+        },
+      });
+    } catch (error) {
+      throw new Error('Failed get cart!');
+    };
+  }
 }

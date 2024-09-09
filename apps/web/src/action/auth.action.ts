@@ -9,17 +9,18 @@ export const loginAction = async (values: {
 }) => {
   try {
     await signIn('credentials', {
-      redirect: true,
+      ...values,
       redirectTo: '/',
-      email: values.email!,
-      password: values.password!,
     });
 
-    return {
-      message: 'Login Success',
-    };
+    // return {
+    //   message: 'Login Success',
+    // };
   } catch (e) {
-    throw new Error('Login Gagal');
+    console.log(e);
+
+    // throw new Error('Login Gagal');
+    throw e;
   }
 };
 

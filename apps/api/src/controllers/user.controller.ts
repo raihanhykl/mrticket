@@ -11,4 +11,13 @@ export class UserController {
       next(error);
     }
   }
+
+  async getCart(req: Request, res: Response, next: NextFunction){
+      try {
+        const data = await UserService.getCart(req);
+        return res.send(responseHandle('Success Get Cart', data));
+      } catch (error) {
+        next(error);
+      }
+  }
 }

@@ -71,7 +71,7 @@ export class AdminService {
         category,
         User: {
           connect: {
-            id: userId,
+            id: Number(userId),
           },
         },
       };

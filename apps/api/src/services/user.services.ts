@@ -119,7 +119,31 @@ export class UserService {
 
   static async review(req: Request){
     try {
+      console.log(req.body, 'ini req body api service');
+      
       const {review, rating, eventId} = req.body
+      const check = await prisma.transaction.findFirst({
+        where: {
+          userId: Number(req.user.id),
+          transaction_detail: {
+            some: {
+              Ticket: {
+                eventId: Number(eventId),  // Cari berdasarkan eventId yang sesuai
+              },
+            },
+          },
+        },
+      });
+
+      console.log(check, 'ini check');
+      
+      if(!check){
+        console.log('check nya gaada bg');
+        
+        throw new Error('Transaction not found, user not permitted')
+
+      }
+
       const data: Prisma.ReviewCreateInput = {
         review,
         rating,
@@ -134,8 +158,11 @@ export class UserService {
           }
         }
       }
+      const valid = await prisma.event
+
+      return await prisma.review.create({data})
     } catch (error) {
-      
+      throw new Error("Failed to create review")
     }
   }
 }

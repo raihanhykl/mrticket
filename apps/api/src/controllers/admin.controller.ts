@@ -54,4 +54,13 @@ export class AdminController {
       throw new ErrorHandler('create ticket failed', 400);
     }
   }
+
+  async createReview(req: Request, res: Response){
+    try {
+      const data = await AdminService
+    } catch (error) {
+      
+    }
+  }
+
 }

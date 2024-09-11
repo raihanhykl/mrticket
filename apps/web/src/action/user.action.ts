@@ -67,3 +67,36 @@ export const checkOut = async (
     throw new Error('Check Out gagal.');
   }
 };
+
+export const addReview = async (
+  access_token: string,
+  eventId: number,
+  review: string,
+  rating: number,
+) => {
+  try {
+    console.log('access_token', access_token);
+    console.log('eventId', eventId);
+    console.log('review', review);
+    console.log('rating', rating);  
+    
+    await api.post(
+      '/users/review',
+      {
+        eventId,
+        review,
+        rating,
+      },
+      {
+        headers: {
+          Authorization: 'Bearer ' + access_token,
+        },
+      },
+    );
+    return {
+      success: true,
+    };
+  } catch (error) {
+    console.log(error);
+  }
+};

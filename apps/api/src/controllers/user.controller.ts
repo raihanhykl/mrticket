@@ -12,30 +12,38 @@ export class UserController {
     }
   }
 
-  async getCart(req: Request, res: Response, next: NextFunction){
-      try {
-        const data = await UserService.getCart(req);
-        return res.send(responseHandle('Success Get Cart', data));
-      } catch (error) {
-        next(error);
-      }
-  }
-
-  async checkOut(req: Request, res: Response, next: NextFunction){
+  async getCart(req: Request, res: Response, next: NextFunction) {
     try {
-      const data = await UserService.checkOut(req);
-      return res.send(responseHandle("Check Out SUccess", data))
+      const data = await UserService.getCart(req);
+      return res.send(responseHandle('Success Get Cart', data));
     } catch (error) {
-      next(error)
+      next(error);
     }
   }
 
-  async getTransaction(req: Request, res: Response, next: NextFunction){
+  async checkOut(req: Request, res: Response, next: NextFunction) {
+    try {
+      const data = await UserService.checkOut(req);
+      return res.send(responseHandle('Check Out SUccess', data));
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  async getTransaction(req: Request, res: Response, next: NextFunction) {
     try {
       const data = await UserService.getTransaction(req);
-      return res.send(responseHandle("Success Get Transaction", data))
+      return res.send(responseHandle('Success Get Transaction', data));
     } catch (error) {
-      next(error)
+      next(error);
+    }
+  }
+  async createReview(req: Request, res: Response, next: NextFunction) {
+    try {
+      const data = await UserService.review(req);
+      return res.send(responseHandle('Success Create Review', data));
+    } catch (error) {
+      next(error);
     }
   }
 }

@@ -1,30 +1,44 @@
 'use client';
+import { addReview } from '@/action/user.action';
+import { useSession } from 'next-auth/react';
 import React, { useState } from 'react';
+type Props = {
+    params: {
+      event_id: number;
+    };
+  };
 
-export default function Page() {
+export default function Page({ params }: Props) {
     const [rating, setRating] = useState<number | ''>('');
     const [review, setReview] = useState<string>('');
     const [error, setError] = useState<string>('');
+    const session = useSession();
 
-    const handleSubmit = (e: React.FormEvent) => {
+    const event_id = params.event_id;
+
+    const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
 
-        // Validasi
+        if (session.status === 'unauthenticated') {
+            alert('Anda harus login terlebih dahulu.');
+            return;
+        }
+
+        const access_token = session.data?.user.access_token;
+        
         if (rating === '' || review.trim() === '') {
             setError('Rating dan review harus diisi.');
             return;
         }
-
-        // Reset error jika validasi berhasil
         setError('');
 
-        // Logic pengiriman form
         console.log('Rating:', rating);
         console.log('Review:', review);
-        
-        // Clear form after submission
-        setRating('');
-        setReview('');
+
+        await addReview(String(access_token), event_id ,review, rating );
+
+        // setRating('');
+        // setReview('');
     };
 
     return (

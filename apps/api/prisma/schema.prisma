@@ -151,7 +151,7 @@ model TransactionDetail {
   id       Int @id @default(autoincrement())
   quantity Int
   price    Int
-  discount Int
+  discount Int?
 
   Transaction   Transaction? @relation(fields: [transactionId], references: [id])
   transactionId Int?

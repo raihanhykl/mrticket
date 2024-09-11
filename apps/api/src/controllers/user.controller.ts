@@ -20,4 +20,22 @@ export class UserController {
         next(error);
       }
   }
+
+  async checkOut(req: Request, res: Response, next: NextFunction){
+    try {
+      const data = await UserService.checkOut(req);
+      return res.send(responseHandle("Check Out SUccess", data))
+    } catch (error) {
+      next(error)
+    }
+  }
+
+  async getTransaction(req: Request, res: Response, next: NextFunction){
+    try {
+      const data = await UserService.getTransaction(req);
+      return res.send(responseHandle("Success Get Transaction", data))
+    } catch (error) {
+      next(error)
+    }
+  }
 }

@@ -6,6 +6,7 @@ import { Footer } from '@/components/Footer';
 import Navbar from '@/components/Navbar';
 import { ThemeModeScript } from 'flowbite-react';
 import { Toaster } from '@/components/ui/toaster';
+import { SessionProvider } from 'next-auth/react';
 
 const inter = Inter({ subsets: ['latin'] });
 
@@ -25,12 +26,14 @@ export default function RootLayout({
         <ThemeModeScript />
       </head>
       <body className={inter.className}>
-        <center>
-          <Navbar />
-          {children}
-          <Toaster />
-          <Footer />
-        </center>
+        <SessionProvider>
+          <center>
+            <Navbar />
+            {children}
+            <Toaster />
+            <Footer />
+          </center>
+        </SessionProvider>
       </body>
     </html>
   );

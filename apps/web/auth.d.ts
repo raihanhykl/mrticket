@@ -12,6 +12,7 @@ declare module 'next-auth' {
     poin: number | undefined;
     exp_poin: Date | undefined;
     roleId: number | undefined;
+    access_token: string;
   }
 
   interface Session {
@@ -33,5 +34,6 @@ declare module 'next-auth/jwt' {
     referral_code: string | undefined;
     f_referral_code: string | undefined;
     roleId: number | undefined;
+    access_token: string;
   }
 }

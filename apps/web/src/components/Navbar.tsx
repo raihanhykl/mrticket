@@ -34,24 +34,33 @@ export default async function Navbar({}: Props) {
             />
           </Link>
 
-          <div className="hidden md:flex content-center">search</div>
+          {/* <div className="hidden md:flex content-center">search</div> */}
 
           <div className="hidden md:flex gap-5">
-            <div className="content-center flex items-center gap-1">
-              <img
-                src="https://assets.loket.com/web/assets/img/ic_schedule.svg"
-                alt=""
-                className="w-[21px]"
-              />
-              <a href="">Buat Event</a>
+            <div className="content-center">
+              <Link href={"/creatEvent"}>
+                <div className="content-center flex items-center gap-1">
+                  <img
+                    src="https://assets.loket.com/web/assets/img/ic_schedule.svg"
+                    alt=""
+                    className="w-[21px]"
+                  />
+                  <p>Buat Event</p>
+                </div>
+              </Link>
             </div>
-            <div className="content-center flex items-center gap-1">
-              <img
-                src="	https://assets.loket.com/web/assets/img/ic_explore_compass.svg"
-                alt=""
-                className="w-[21px]"
-              />
-              <a href="">Jelajah</a>
+
+            <div className="content-center">
+              <Link href={'/events'}>
+                <div className="content-center flex items-center gap-1">
+                  <img
+                    src="	https://assets.loket.com/web/assets/img/ic_explore_compass.svg"
+                    alt=""
+                    className="w-[21px]"
+                  />
+                  <p>Jelajah</p>
+                </div>
+              </Link>
             </div>
 
             <div className="flex gap-2">

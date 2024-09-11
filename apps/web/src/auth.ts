@@ -30,6 +30,7 @@ export const { signIn, signOut, handlers, auth } = NextAuth({
           if (!token) throw new Error("Can't login");
 
           const user = jwtDecode<User>(token);
+          user.access_token = token;
 
           return user;
         } catch (error) {
@@ -55,6 +56,7 @@ export const { signIn, signOut, handlers, auth } = NextAuth({
         session.user.roleId = token.roleId as number;
         session.user.poin = token.poin as number;
         session.user.exp_poin = token.exp_poin as Date;
+        session.user.access_token = token.access_token as string;
       }
       return session;
     },
@@ -70,6 +72,7 @@ export const { signIn, signOut, handlers, auth } = NextAuth({
         token.roleId = Number(user.roleId);
         token.poin = Number(user.poin);
         token.exp_poin = user.exp_poin;
+        token.access_token = user.access_token;
       }
 
       if (trigger === 'update' && session) {

@@ -4,42 +4,57 @@ import { Prisma } from '@prisma/client';
 import { Request } from 'express';
 
 export class AdminService {
-
-  static async getEvent(req: Request){
+  static async getEvent(req: Request) {
     try {
-      
-      const data = await prisma.event.findMany({})
-      return data
+      const data = await prisma.event.findMany({});
+      return data;
     } catch (error) {
-      throw new ErrorHandler("Failed to get data", 400)
+      throw new ErrorHandler('Failed to get data', 400);
     }
   }
 
-  static async getEventDetail(req: Request){
+  static async searchEvent(req: Request) {
     try {
+      const search = req.query.search;
+      console.log(search, 'testtttttt');
       
+      const data = await prisma.event.findMany({
+        where: {
+          event_name: {
+            contains: String(search),
+          },
+        },
+      });
+      
+      return data;
+    } catch (error) {
+      throw new ErrorHandler('failed to search event', 400)
+    }
+  }
+
+  static async getEventDetail(req: Request) {
+    try {
       const data = await prisma.event.findUnique({
         where: {
-          id: Number(req.params.event_id)
-        }
-      })
-      return data
+          id: Number(req.params.event_id),
+        },
+      });
+      return data;
     } catch (error) {
-      throw new ErrorHandler("Failed to get data", 400)
+      throw new ErrorHandler('Failed to get data', 400);
     }
   }
 
-  static async getEventTicket(req: Request){
+  static async getEventTicket(req: Request) {
     try {
-      
       const data = await prisma.ticket.findMany({
         where: {
-          eventId: Number(req.params.event_id)
-        }
-      })
-      return data
+          eventId: Number(req.params.event_id),
+        },
+      });
+      return data;
     } catch (error) {
-      throw new ErrorHandler("Failed to get data", 400)
+      throw new ErrorHandler('Failed to get data', 400);
     }
   }
   static async createEvent(req: Request) {

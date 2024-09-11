@@ -1,6 +1,7 @@
 'use client';
 import { addToCart } from '@/action/user.action';
 import { api } from '@/config/axios.config';
+import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 // import router from 'next/router';
 import React, { useEffect, useState } from 'react';
@@ -12,6 +13,7 @@ type Props = {
 };
 
 
+
 const month = ["January","February","March","April","May","June","July","August","September","October","November","December"];
 
 export default function Page({ params }: Props) {
@@ -19,6 +21,7 @@ export default function Page({ params }: Props) {
   const [tickets, setTickets] = useState<any[]>([]);
   const [event, setEvent] = useState<any>({});
   const [quantities, setQuantities] = useState<{ [ticketId: number]: number }>({});
+  const { data: session } = useSession();
 
   useEffect(() => {
     const fetchData = async () => {
@@ -44,9 +47,9 @@ export default function Page({ params }: Props) {
         ticketId: Number(ticket.id),
         quantity: quantities[ticket.id] || 0,
       }));
-
+      const accessToken = session?.user?.access_token;
       console.log(cartData);
-      const res = await addToCart(cartData);
+      const res = await addToCart(cartData, String(accessToken));
       if (res?.success) {
         router.push('/');
       } else {

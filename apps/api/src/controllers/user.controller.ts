@@ -3,6 +3,14 @@ import { UserService } from '@/services/user.services';
 import { responseHandle, ErrorHandler } from '@/helpers/response';
 
 export class UserController {
+  async getUser(req: Request, res: Response, next: NextFunction) {
+    try {
+      const data = await UserService.getUser(req);
+      return res.send(responseHandle('Success Get User', data));
+    } catch (error) {
+      next(error);
+    }
+  }
   async addToCart(req: Request, res: Response, next: NextFunction) {
     try {
       const data = await UserService.addToCart(req);

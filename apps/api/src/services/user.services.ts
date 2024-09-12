@@ -1,8 +1,20 @@
+import { ErrorHandler } from '@/helpers/response';
 import prisma from '@/prisma';
 import { Prisma } from '@prisma/client';
 import { Request } from 'express';
 
 export class UserService {
+  static async getUser(req: Request) {
+    try {
+      return await prisma.user.findUnique({
+        where: {
+          id: Number(req.user.id),
+        },
+      });
+    } catch (error) {
+      throw new Error('Failed get user!');
+    }
+  }
   static async addToCart(req: Request) {
     try {
       console.log(req.body, 'ini req body api service');
@@ -31,9 +43,9 @@ export class UserService {
   static async checkOut(req: Request) {
     return await prisma.$transaction(async (prisma) => {
       try {
-        const { total_price, voucher_id, values } = req.body;
+        const { total_price, voucher_id, values, usePoint } = req.body;
         const data: Prisma.TransactionCreateInput = {
-          invoice: 'INV-' + Date.now() + '/' + Math.random() * 10,
+          invoice: 'INV-' + Date.now() + '/' + Math.floor(Math.random() * 100),
           transaction_date: new Date(),
           total_price,
           Voucher: {
@@ -48,6 +60,18 @@ export class UserService {
           },
         };
         const trans = await prisma.transaction.create({ data });
+
+        if (usePoint) {
+          const res = await prisma.user.update({
+            where: {
+              id: Number(req.user.id),
+            },
+            data: {
+              poin: 0,
+            },
+          });
+          console.log('ini res use point: ', res);
+        }
 
         for (const value of values) {
           const { quantity, price, discount, ticket_id, cartId } = value;
@@ -68,6 +92,23 @@ export class UserService {
           };
           await prisma.transactionDetail.create({ data: dataDetail });
           await prisma.cart.delete({ where: { id: Number(cartId) } });
+          const stock = await prisma.ticket.findFirst({
+            where: { id: Number(ticket_id) },
+          });
+          if (stock?.stock) {
+            if (stock?.stock < quantity)
+              throw new ErrorHandler('Stock tiket tidak cukup', 404);
+            await prisma.ticket.update({
+              where: {
+                id: ticket_id,
+              },
+              data: {
+                stock: {
+                  decrement: quantity,
+                },
+              },
+            });
+          }
         }
       } catch (error) {
         throw new Error('Check Out Failed');
@@ -94,7 +135,7 @@ export class UserService {
     }
   }
 
-  static async getTransaction(req: Request) { 
+  static async getTransaction(req: Request) {
     try {
       return await prisma.transaction.findMany({
         where: {
@@ -114,21 +155,21 @@ export class UserService {
       });
     } catch (error) {
       throw new Error('Failed get transaction!');
-    };
+    }
   }
 
-  static async review(req: Request){
+  static async review(req: Request) {
     try {
       console.log(req.body, 'ini req body api service');
-      
-      const {review, rating, eventId} = req.body
+
+      const { review, rating, eventId } = req.body;
       const check = await prisma.transaction.findFirst({
         where: {
           userId: Number(req.user.id),
           transaction_detail: {
             some: {
               Ticket: {
-                eventId: Number(eventId),  // Cari berdasarkan eventId yang sesuai
+                eventId: Number(eventId), // Cari berdasarkan eventId yang sesuai
               },
             },
           },
@@ -136,33 +177,32 @@ export class UserService {
       });
 
       console.log(check, 'ini check');
-      
-      if(!check){
-        console.log('check nya gaada bg');
-        
-        throw new Error('Transaction not found, user not permitted')
 
+      if (!check) {
+        console.log('check nya gaada bg');
+
+        throw new Error('Transaction not found, user not permitted');
       }
 
       const data: Prisma.ReviewCreateInput = {
         review,
         rating,
         Event: {
-          connect:{
-            id: Number(eventId)
-          }
+          connect: {
+            id: Number(eventId),
+          },
         },
         User: {
-          connect:{
-            id: Number(req.user.id)
-          }
-        }
-      }
-      const valid = await prisma.event
+          connect: {
+            id: Number(req.user.id),
+          },
+        },
+      };
+      const valid = await prisma.event;
 
-      return await prisma.review.create({data})
+      return await prisma.review.create({ data });
     } catch (error) {
-      throw new Error("Failed to create review")
+      throw new Error('Failed to create review');
     }
   }
 }

@@ -34,7 +34,19 @@ export const eventSchema = z.object({
     )
     .nonempty('At least one ticket is required')
     .optional(),
-    // image: z.custom<File>((file) => file instanceof File, {
-    //   message: 'Event image is required',
-    // }),
+});
+
+export const updateEventSchema = z.object({
+  event_name: z.string().nonempty('Event name is required'),
+  event_desc: z.string().nonempty('Event description is required'),
+  category: z.enum(['music', 'theatre', 'festival', 'hobbies']),
+  location: z.string().nonempty('Location is required'),
+  start_date: z.coerce.date({
+    required_error: 'Start date is required',
+  }),
+  end_date: z.coerce.date({
+    required_error: 'End date is required',
+  }),
+  start_time: z.string().nonempty('Start time is required'),
+  end_time: z.string().nonempty('End time is required'),
 });

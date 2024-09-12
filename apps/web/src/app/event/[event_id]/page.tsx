@@ -12,15 +12,28 @@ type Props = {
   };
 };
 
-
-
-const month = ["January","February","March","April","May","June","July","August","September","October","November","December"];
+const month = [
+  'January',
+  'February',
+  'March',
+  'April',
+  'May',
+  'June',
+  'July',
+  'August',
+  'September',
+  'October',
+  'November',
+  'December',
+];
 
 export default function Page({ params }: Props) {
   const router = useRouter();
   const [tickets, setTickets] = useState<any[]>([]);
   const [event, setEvent] = useState<any>({});
-  const [quantities, setQuantities] = useState<{ [ticketId: number]: number }>({});
+  const [quantities, setQuantities] = useState<{ [ticketId: number]: number }>(
+    {},
+  );
   const { data: session } = useSession();
 
   useEffect(() => {
@@ -76,11 +89,15 @@ export default function Page({ params }: Props) {
           <p className="text-2xl font-semibold">{event.event_name}</p>
           <div className="py-5 grid gap-2">
             <p>
-              {new Date(event.start_date).getDate()} {month[new Date(event.start_date).getMonth()]} -{' '}
-              {new Date(event.end_date).getDate()} {month[new Date(event.end_date).getMonth()]}{' '}
+              {new Date(event.start_date).getDate()}{' '}
+              {month[new Date(event.start_date).getMonth()]} -{' '}
+              {new Date(event.end_date).getDate()}{' '}
+              {month[new Date(event.end_date).getMonth()]}{' '}
               {new Date(event.end_date).getFullYear()}
             </p>
-            <p>{event.start_time} - {event.end_time}</p>
+            <p>
+              {event.start_time} - {event.end_time}
+            </p>
             <p>{event.location}</p>
           </div>
         </div>
@@ -94,12 +111,18 @@ export default function Page({ params }: Props) {
 
       <form onSubmit={handleSubmit}>
         {tickets.map((ticket) => (
-          <div key={ticket.id} className="flex border-[2px] my-3 shadow-sm rounded-sm">
+          <div
+            key={ticket.id}
+            className="flex border-[2px] my-3 shadow-sm rounded-sm"
+          >
             <div className="p-5 flex justify-between w-full">
               <div className="flex flex-col gap-4 text-left">
                 <p className="font-bold text-lg">{ticket.ticket_type}</p>
                 <p className="font-semibold">
-                  {ticket.price.toLocaleString('id-ID', { style: 'currency', currency: 'IDR' })}
+                  {ticket.price.toLocaleString('id-ID', {
+                    style: 'currency',
+                    currency: 'IDR',
+                  })}
                 </p>
               </div>
               <div className="content-center">
@@ -113,8 +136,10 @@ export default function Page({ params }: Props) {
                     name={`quantity_${ticket.id}`}
                     min="0"
                     max={ticket.stock}
-                    value={quantities[ticket.id] || ""}
-                    onChange={(e) => handleQuantityChange(ticket.id, parseInt(e.target.value))}
+                    value={quantities[ticket.id] || 0}
+                    onChange={(e) =>
+                      handleQuantityChange(ticket.id, parseInt(e.target.value))
+                    }
                   />
                   {/* <input type="number" id="quantity" name="quantity" min="1" max="5"></input> */}
                 </div>
@@ -124,7 +149,10 @@ export default function Page({ params }: Props) {
         ))}
 
         <div className="flex justify-end">
-          <button className="bg-[#0049cc] text-white p-3 rounded-lg border-[1px] content-end" type="submit">
+          <button
+            className="bg-[#0049cc] text-white p-3 rounded-lg border-[1px] content-end"
+            type="submit"
+          >
             Add to Cart
           </button>
         </div>

@@ -38,7 +38,7 @@ export default async function Navbar({}: Props) {
 
           <div className="hidden md:flex gap-5">
             <div className="content-center">
-              <Link href={"/creatEvent"}>
+              <Link href={'/createEvent'}>
                 <div className="content-center flex items-center gap-1">
                   <img
                     src="https://assets.loket.com/web/assets/img/ic_schedule.svg"

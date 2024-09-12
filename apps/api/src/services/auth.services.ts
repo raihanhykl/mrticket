@@ -44,29 +44,6 @@ export class AuthSerivce {
           roleId,
         } = req.body;
 
-        if (f_referral_code) {
-          const referral = (await prisma.user.findFirst({
-            where: {
-              referral_code: f_referral_code,
-            },
-          })) as IUser;
-          if (!referral) throw new ErrorHandler('Referral code not found', 400);
-
-          await prisma.user.update({
-            where: {
-              id: Number(referral?.id),
-            },
-            data: {
-              poin: {
-                increment: 10000,
-              },
-              exp_poin: new Date(
-                new Date().setMonth(new Date().getMonth() + 3),
-              ),
-            },
-          });
-        }
-
         const hashPassword = await hash(password, 10);
         const data: Prisma.UserCreateInput = {
           first_name,
@@ -87,16 +64,39 @@ export class AuthSerivce {
 
         const newUser = await prisma.user.create({ data });
 
-        await prisma.userVoucher.create({
-          data: {
-            userId: newUser.id,
-            voucherId: 1,
-            is_used: false,
-            valid_date: new Date(
-              new Date().setMonth(new Date().getMonth() + 3),
-            ),
-          },
-        });
+        if (f_referral_code != '') {
+          const referral = (await prisma.user.findFirst({
+            where: {
+              referral_code: f_referral_code,
+            },
+          })) as IUser;
+          if (!referral) throw new ErrorHandler('Referral code not found', 400);
+          console.log(referral + ': INI REFERRAL');
+
+          await prisma.user.update({
+            where: {
+              id: Number(referral?.id),
+            },
+            data: {
+              poin: {
+                increment: 10000,
+              },
+              exp_poin: new Date(
+                new Date().setMonth(new Date().getMonth() + 3),
+              ),
+            },
+          });
+          await prisma.userVoucher.create({
+            data: {
+              userId: newUser.id,
+              voucherId: 1,
+              is_used: false,
+              valid_date: new Date(
+                new Date().setMonth(new Date().getMonth() + 3),
+              ),
+            },
+          });
+        }
       } catch (error) {
         throw new ErrorHandler((error as Error).message, 400);
       }

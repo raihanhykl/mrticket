@@ -42,6 +42,7 @@ export const checkOut = async (
   access_token: string,
   total_price: number,
   voucher_id: number | undefined,
+  usePoint: boolean,
   values: {
     quantity: number;
     price: number | undefined;
@@ -53,7 +54,7 @@ export const checkOut = async (
   try {
     await api.post(
       '/users/check-out',
-      { total_price, voucher_id, values },
+      { total_price, voucher_id, values, usePoint },
       {
         headers: {
           Authorization: 'Bearer ' + access_token,
@@ -78,8 +79,8 @@ export const addReview = async (
     console.log('access_token', access_token);
     console.log('eventId', eventId);
     console.log('review', review);
-    console.log('rating', rating);  
-    
+    console.log('rating', rating);
+
     await api.post(
       '/users/review',
       {

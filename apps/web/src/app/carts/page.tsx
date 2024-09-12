@@ -3,6 +3,7 @@ import { api } from '@/config/axios.config';
 import React, { useEffect, useState } from 'react';
 import { useSession } from 'next-auth/react';
 import { checkOut } from '@/action/user.action';
+import { Switch } from '@/components/ui/switch';
 import { log } from 'console';
 import { redirect } from 'next/navigation';
 
@@ -13,7 +14,9 @@ export default function page({}: Props) {
   const [selectedCarts, setSelectedCarts] = useState<number[]>([]);
   const [selectAll, setSelectAll] = useState(false);
   const session = useSession();
-  const [isCheckOut, setIsCheckOut] = useState(false)
+  const [isCheckOut, setIsCheckOut] = useState(false);
+  const [usePoin, setUsePoin] = useState(false);
+  const [poin, setPoin] = useState<number>(0);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -25,11 +28,20 @@ export default function page({}: Props) {
       setCarts(res.data.data);
     };
 
+    const getPoin = async () => {
+      const res = await api.get('/users/get-user', {
+        headers: {
+          Authorization: 'Bearer ' + session?.data?.user.access_token,
+        },
+      });
+      setPoin(res.data.data.poin);
+    };
     if (session.status == 'authenticated') {
       fetchData();
+      getPoin();
     }
   }, [session, isCheckOut]);
-  
+
   // Handle checkbox change
   // const handleCheckboxChange = (cartId: number) => {
   //   setSelectedCarts((prevSelected) => {
@@ -79,10 +91,14 @@ export default function page({}: Props) {
     );
   };
 
-  const getTotalPrice = () => {
-    return carts.reduce((total: number, cart: any) => {
+  const getTotalPrice = (usePoin: boolean = false) => {
+    const res = carts.reduce((total: number, cart: any) => {
       return total + cart.quantity * cart.Ticket.price;
     }, 0);
+    if (usePoin) {
+      return res - poin;
+    }
+    return res;
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -103,9 +119,9 @@ export default function page({}: Props) {
 
       console.log(values);
 
-      await checkOut(access_token, total_price, voucher_id, values);
-      
-      setIsCheckOut(!isCheckOut)
+      await checkOut(access_token, total_price, voucher_id, usePoin, values);
+
+      setIsCheckOut(!isCheckOut);
     } catch (error) {}
 
     // console.log('Selected carts:', carts);
@@ -174,8 +190,17 @@ export default function page({}: Props) {
           ))}
 
           <div className="text-right mt-5">
+            <div>
+              Use {poin} Poin?{' '}
+              <span>
+                <Switch onCheckedChange={(e) => setUsePoin(e)} />
+              </span>
+            </div>
             <h3 className="text-xl font-bold">
-              Total Price: Rp. {getTotalPrice().toLocaleString('id-ID')}
+              Total Price: Rp.{' '}
+              {usePoin
+                ? getTotalPrice(usePoin).toLocaleString('id-ID')
+                : getTotalPrice().toLocaleString('id-ID')}
             </h3>
           </div>
         </div>

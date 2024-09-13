@@ -140,7 +140,7 @@ model Transaction {
   transaction_date   DateTime
   total_price        Int
   transaction_detail TransactionDetail[]
-  poin_used          Int
+  poin_used          Int                 @default(0)
 
   Voucher   Voucher? @relation(fields: [voucherId], references: [id])
   voucherId Int?

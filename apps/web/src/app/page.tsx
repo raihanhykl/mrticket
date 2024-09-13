@@ -50,7 +50,7 @@ export default function Component() {
         <div className="">
           <h1 className="text-2xl font-semibold md:text-left">Event Pilihan</h1>
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 justify-items-center gap-5 mt-3 mb-5">
-            {events.map((event: any) => (
+            {events.slice(0, 4).map((event: any) => (
               <div key={event.id}>
                 <Link href={`/event/${event.id}`}>
                   <div className=" border-[1px] rounded-xl">

@@ -54,4 +54,21 @@ export class UserController {
       next(error);
     }
   }
+
+  async getUserVoucher(req: Request, res: Response, next: NextFunction) {
+    try {
+      const data = await UserService.getUserVoucher(req);
+      return res.send(responseHandle('Success Get User Voucher', data));
+    } catch (error) {
+      next(error);
+    }
+  }
+  async updateCart(req: Request, res: Response, next: NextFunction) {
+    try {
+      const data = await UserService.updateCart(req);
+      return res.send(responseHandle('Success Update Cart', data));
+    } catch (error) {
+      next(error);
+    }
+  }
 }

@@ -14,7 +14,10 @@ export async function middleware(request: NextRequest) {
     return NextResponse.redirect(new URL('/', request.url));
   }
 
-  if (user?.roleId == 1 && pathname === '/createEvent') {
+  if (
+    (!user || user?.roleId === 1) &&
+    (pathname === '/createEvent' || pathname.startsWith('/update-event'))
+  ) {
     return NextResponse.redirect(new URL('/', request.url));
   }
   return response;
@@ -22,5 +25,5 @@ export async function middleware(request: NextRequest) {
 
 // See "Matching Paths" below to learn more
 export const config = {
-  matcher: ['/login', '/register', '/createEvent'],
+  matcher: ['/login', '/register', '/createEvent', '/update-event/:path*'],
 };

@@ -135,6 +135,23 @@ export class UserService {
     }
   }
 
+  static async updateCart(req: Request) {
+    try {
+      const { quantity, cartId } = req.body;
+
+      return await prisma.cart.update({
+        where: {
+          id: Number(cartId),
+        },
+        data: {
+          quantity,
+        },
+      });
+    } catch (error) {
+      throw new Error('Failed update cart!');
+    }
+  }
+
   static async getTransaction(req: Request) {
     try {
       return await prisma.transaction.findMany({
@@ -203,6 +220,25 @@ export class UserService {
       return await prisma.review.create({ data });
     } catch (error) {
       throw new Error('Failed to create review');
+    }
+  }
+
+  static async getUserVoucher(req: Request) {
+    try {
+      return await prisma.userVoucher.findMany({
+        where: {
+          userId: Number(req.user.id),
+          is_used: false,
+          valid_date: {
+            gte: new Date(),
+          },
+        },
+        include: {
+          Voucher: true,
+        },
+      });
+    } catch (error) {
+      throw new Error('Failed to get user voucher');
     }
   }
 }

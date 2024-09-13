@@ -1,10 +1,11 @@
 'use client';
 
-import { addEventAction } from '@/action/event.action';
+import { addEventAction, updateEventAction } from '@/action/event.action';
 import { api } from '@/config/axios.config';
 import { eventSchema, updateEventSchema } from '@/schemas/event.schemas';
 import { ErrorMessage } from '@hookform/error-message';
 import { zodResolver } from '@hookform/resolvers/zod';
+import { useSession } from 'next-auth/react';
 import React, { useEffect, useState } from 'react';
 import { useForm, useFieldArray } from 'react-hook-form';
 import { z } from 'zod';
@@ -27,20 +28,9 @@ export default function Page({ params }: Props) {
     start_time: '00:00',
     end_time: '00:00',
   });
-  const form = useForm<z.infer<typeof eventSchema>>({
+  const form = useForm<z.infer<typeof updateEventSchema>>({
     resolver: zodResolver(eventSchema),
-    defaultValues: {
-      // tickets: [
-      //   {
-      //     ticket_type: '',
-      //     price: 0,
-      //     stock: 0,
-      //     discount_price: 0,
-      //     disc_start_date: new Date(),
-      //     disc_end_date: new Date(),
-      //   },
-      // ],
-    },
+    defaultValues: {},
   });
 
   const {
@@ -53,18 +43,25 @@ export default function Page({ params }: Props) {
   useEffect(() => {
     const fetchData = async () => {
       const res = await api.get(`/admin/event/${params.event_id}`);
-      setEvent(res.data.data);
+      const fetchedData = res.data.data;
+
+      const formattedData = {
+        ...fetchedData,
+        start_date: new Date(fetchedData.start_date)
+          .toISOString()
+          .split('T')[0],
+        end_date: new Date(fetchedData.end_date).toISOString().split('T')[0],
+      };
+      setEvent(formattedData);
+      form.reset(formattedData);
     };
     fetchData();
   }, [params.event_id]);
 
+  const session = useSession();
+
   const onSubmit = async (values: z.infer<typeof updateEventSchema>) => {
     try {
-      if (!selectedFile) {
-        console.log(values.event_name, 'event name');
-        // alert('Please upload an image file');
-        // return;
-      }
       const formData = new FormData();
       formData.append('event_name', values.event_name);
       formData.append('event_desc', values.event_desc);
@@ -74,11 +71,17 @@ export default function Page({ params }: Props) {
       formData.append('end_date', values.end_date.toISOString());
       formData.append('start_time', values.start_time);
       formData.append('end_time', values.end_time);
-      // formData.append('image', selectedFile);
 
-      // const data = { ...values, image: selectedFile };
+      if (selectedFile) {
+        formData.append('image', selectedFile);
 
-      console.log(formData, 'kiw');
+        // const data = { ...values, image: selectedFile };
+
+        console.log(formData, 'kiw');
+      }
+
+      const accessToken = String(session.data?.user.access_token);
+      await updateEventAction(formData, accessToken);
 
       // if (ticket) await addEventAction(formData, ticket);
     } catch (err) {
@@ -111,7 +114,7 @@ export default function Page({ params }: Props) {
               <p>Event Name</p>
               <input
                 type="text"
-                defaultValue={event.event_name}
+                // defaultValue={event.event_name}
                 {...register('event_name')}
                 className="border w-full bg-[#F9FAFB] rounded-lg"
                 // defaultValue={event.event_name}
@@ -126,7 +129,7 @@ export default function Page({ params }: Props) {
                 type="text"
                 {...register('event_desc')}
                 className="border w-full bg-[#F9FAFB] rounded-lg"
-                defaultValue={event.event_desc}
+                // defaultValue={event.event_desc}
               />
               <ErrorMessage errors={errors} name="event_desc" />
             </div>
@@ -137,7 +140,7 @@ export default function Page({ params }: Props) {
               <select
                 {...register('category')}
                 className="bg-gray-50 border w-full rounded-lg"
-                defaultValue={event.category}
+                // defaultValue={event.category}
               >
                 <option value="music">Music</option>
                 <option value="theatre">Theatre</option>
@@ -154,7 +157,7 @@ export default function Page({ params }: Props) {
                 type="text"
                 {...register('location')}
                 className="border w-full bg-[#F9FAFB] rounded-lg"
-                defaultValue={event.location}
+                // defaultValue={event.location}
               />
               <ErrorMessage errors={errors} name="location" />
             </div>
@@ -169,11 +172,10 @@ export default function Page({ params }: Props) {
                   {...register('start_date')}
                   className="border w-full bg-[#F9FAFB] rounded-lg"
                   // value={event.start_date}
-                  defaultValue={
-                    new Date(event.start_date).toISOString()?.split('T')[0]
-                  }
+                  // defaultValue={
+                  //   new Date(event.start_date).toISOString()?.split('T')[0]
+                  // }
                 />
-
                 <ErrorMessage errors={errors} name="start_date" />
               </div>
 
@@ -183,9 +185,9 @@ export default function Page({ params }: Props) {
                   type="date"
                   {...register('end_date')}
                   className="border w-full bg-[#F9FAFB] rounded-lg"
-                  defaultValue={
-                    new Date(event.end_date).toISOString()?.split('T')[0]
-                  }
+                  // defaultValue={
+                  //   new Date(event.end_date).toISOString()?.split('T')[0]
+                  // }
                 />
                 <ErrorMessage errors={errors} name="end_date" />
               </div>
@@ -198,7 +200,7 @@ export default function Page({ params }: Props) {
                   type="time"
                   {...register('start_time')}
                   className="border w-full bg-[#F9FAFB] rounded-lg"
-                  defaultValue={event.start_time}
+                  // defaultValue={event.start_time}
                 />
                 <ErrorMessage errors={errors} name="start_time" />
               </div>
@@ -209,7 +211,7 @@ export default function Page({ params }: Props) {
                   type="time"
                   {...register('end_time')}
                   className="border w-full bg-[#F9FAFB] rounded-lg"
-                  defaultValue={event.end_time}
+                  // defaultValue={event.end_time}
                 />
                 <ErrorMessage errors={errors} name="end_time" />
               </div>

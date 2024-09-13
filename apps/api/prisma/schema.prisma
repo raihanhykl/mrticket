@@ -140,6 +140,7 @@ model Transaction {
   transaction_date   DateTime
   total_price        Int
   transaction_detail TransactionDetail[]
+  poin_used          Int
 
   Voucher   Voucher? @relation(fields: [voucherId], references: [id])
   voucherId Int?
@@ -148,7 +149,7 @@ model Transaction {
 }
 
 model TransactionDetail {
-  id       Int @id @default(autoincrement())
+  id       Int  @id @default(autoincrement())
   quantity Int
   price    Int
   discount Int?

@@ -17,7 +17,7 @@ export class AdminService {
     try {
       const search = req.query.search;
       console.log(search, 'testtttttt');
-      
+
       const data = await prisma.event.findMany({
         where: {
           event_name: {
@@ -25,10 +25,10 @@ export class AdminService {
           },
         },
       });
-      
+
       return data;
     } catch (error) {
-      throw new ErrorHandler('failed to search event', 400)
+      throw new ErrorHandler('failed to search event', 400);
     }
   }
 
@@ -128,6 +128,53 @@ export class AdminService {
       return await prisma.ticket.create({ data });
     } catch (error) {
       throw new ErrorHandler('Failed to create ticket', 400);
+    }
+  }
+
+  static async updateEvent(req: Request) {
+    try {
+      console.log(req.body);
+
+      const {
+        event_name,
+        event_desc,
+        location,
+        start_date,
+        end_date,
+        start_time,
+        end_time,
+        category,
+      } = req.body;
+
+      const data: Prisma.EventUpdateInput = {
+        event_name,
+        event_desc,
+        location,
+        start_date,
+        end_date,
+        start_time,
+        end_time,
+        category,
+        User: {
+          connect: {
+            id: Number(req.user.id),
+          },
+        },
+      };
+
+      if (req?.file) {
+        const image = req.file;
+        data.image = image.filename;
+      }
+
+      return await prisma.event.update({
+        where: {
+          id: 1,
+        },
+        data,
+      });
+    } catch (error) {
+      console.log('ini error', error);
     }
   }
 }

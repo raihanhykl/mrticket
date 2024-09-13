@@ -18,6 +18,11 @@ export class UserRouter {
       this.userController.addToCart,
     );
     this.router.get('/cart', validateToken, this.userController.getCart);
+    this.router.patch(
+      '/update-cart',
+      validateToken,
+      this.userController.updateCart,
+    );
     this.router.post('/check-out', validateToken, this.userController.checkOut);
     this.router.get(
       '/transaction',
@@ -28,6 +33,12 @@ export class UserRouter {
       '/review',
       validateToken,
       this.userController.createReview,
+    );
+
+    this.router.get(
+      '/user-voucher',
+      validateToken,
+      this.userController.getUserVoucher,
     );
   }
   public getRouter() {

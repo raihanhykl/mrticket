@@ -6,17 +6,24 @@ import { checkOut } from '@/action/user.action';
 import { Switch } from '@/components/ui/switch';
 import { log } from 'console';
 import { redirect } from 'next/navigation';
+import { discountPrice } from '@/action/helper.action';
+import useDebounce from '@/hooks/useDebounce';
+import Cart from '@/components/cart/cart';
 
 type Props = {};
 
 export default function page({}: Props) {
   const [carts, setCarts] = useState<any>([]);
+  const [userVoucher, setUserVoucher] = useState<any>([]);
   const [selectedCarts, setSelectedCarts] = useState<number[]>([]);
   const [selectAll, setSelectAll] = useState(false);
   const session = useSession();
   const [isCheckOut, setIsCheckOut] = useState(false);
   const [usePoin, setUsePoin] = useState(false);
   const [poin, setPoin] = useState<number>(0);
+  const [voucher, setVoucher] = useState<number>();
+  const [voucherAmount, setVoucherAmount] = useState<number>(0);
+  const [voucherType, setVoucherType] = useState<any>();
 
   useEffect(() => {
     const fetchData = async () => {
@@ -25,7 +32,14 @@ export default function page({}: Props) {
           Authorization: 'Bearer ' + session?.data?.user.access_token,
         },
       });
+
+      const userVoucher = await api.get('/users/user-voucher', {
+        headers: {
+          Authorization: 'Bearer ' + session?.data?.user.access_token,
+        },
+      });
       setCarts(res.data.data);
+      setUserVoucher(userVoucher.data.data);
     };
 
     const getPoin = async () => {
@@ -54,15 +68,15 @@ export default function page({}: Props) {
   // };
 
   // Handle "Select All" checkbox change
-  const handleSelectAllChange = () => {
-    setSelectAll(!selectAll);
-    if (!selectAll) {
-      const allCartIds = carts.map((cart: any) => cart.id);
-      setSelectedCarts(allCartIds);
-    } else {
-      setSelectedCarts([]);
-    }
-  };
+  // const handleSelectAllChange = () => {
+  //   setSelectAll(!selectAll);
+  //   if (!selectAll) {
+  //     const allCartIds = carts.map((cart: any) => cart.id);
+  //     setSelectedCarts(allCartIds);
+  //   } else {
+  //     setSelectedCarts([]);
+  //   }
+  // };
 
   // Increase quantity
   const handleIncreaseQuantity = (cartId: number) => {
@@ -84,6 +98,14 @@ export default function page({}: Props) {
     );
   };
 
+  const handleQuantity = (cartId: number, quantity: number) => {
+    setCarts((prevCarts: any[]) =>
+      prevCarts.map((cart: any) =>
+        cart.id === cartId && cart.quantity > 0 ? { ...cart, quantity } : cart,
+      ),
+    );
+  };
+
   // Delete cart item
   const handleDeleteCart = (cartId: number) => {
     setCarts((prevCarts: any[]) =>
@@ -92,14 +114,27 @@ export default function page({}: Props) {
   };
 
   const getTotalPrice = (usePoin: boolean = false) => {
-    const res = carts.reduce((total: number, cart: any) => {
-      return total + cart.quantity * cart.Ticket.price;
+    let res = carts.reduce((total: number, cart: any) => {
+      return (
+        total +
+        discountPrice(
+          cart.Ticket.price,
+          cart.Ticket.discount_price,
+          cart.Ticket.disc_start_date,
+          cart.Ticket.disc_end_date,
+          cart.quantity,
+        ).final
+      );
     }, 0);
-    if (usePoin) {
-      return res - poin;
-    }
+
+    if (usePoin) res -= poin;
+    if (voucherAmount) res -= (voucherAmount / 100) * res;
     return res;
   };
+
+  useEffect(() => {
+    getTotalPrice();
+  }, [voucherAmount]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     try {
@@ -132,61 +167,14 @@ export default function page({}: Props) {
       <form onSubmit={handleSubmit}>
         <div className="flex flex-col gap-2 py-5 max-w-screen-xl px-5 border-2">
           {carts.map((cart: any) => (
-            <div className="flex gap-5" key={cart.id}>
-              {/* <div className="content-center">
-                <input
-                  type="checkbox"
-                  checked={selectedCarts.includes(cart.id)}
-                  onChange={() => handleCheckboxChange(cart.id)}
-                />
-              </div> */}
-              <div className="border-[1px] px-5 py-3 flex justify-between rounded-2xl w-full">
-                <div className="flex gap-5 justify-start">
-                  <img
-                    className="max-h-[100px] rounded-xl"
-                    src={
-                      'http://localhost:8000/events/' + cart.Ticket.Event.image
-                    }
-                    alt=""
-                  />
-                  <div className="flex flex-col content-center justify-center text-left">
-                    <p>{cart.Ticket.Event.event_name}</p>
-                    <p>Ticket: {cart.Ticket.ticket_type}</p>
-                    <p>
-                      Ticket Price: Rp.{' '}
-                      {cart.Ticket.price.toLocaleString('id-ID')}
-                    </p>
-                  </div>
-                </div>
-                <div className="text-right content-center">
-                  <div className="flex items-center justify-end mb-2">
-                    <button
-                      type="button"
-                      onClick={() => handleDecreaseQuantity(cart.id)}
-                      className="px-3 py-1 bg-gray-300 rounded-l-lg border-[1px]"
-                    >
-                      -
-                    </button>
-                    <span className="px-4">{cart.quantity}</span>
-                    <button
-                      type="button"
-                      onClick={() => handleIncreaseQuantity(cart.id)}
-                      className="px-3 py-1 bg-gray-300 rounded-r-lg border-[1px]"
-                    >
-                      +
-                    </button>
-                  </div>
-                  <p>Price: Rp. {cart.quantity * cart.Ticket.price}</p>
-                  <button
-                    type="button"
-                    onClick={() => handleDeleteCart(cart.id)}
-                    className="text-red-600 mt-2"
-                  >
-                    Delete
-                  </button>
-                </div>
-              </div>
-            </div>
+            <Cart
+              key={cart.id}
+              cart={cart}
+              // handleDecreaseQuantity={handleDecreaseQuantity}
+              // handleIncreaseQuantity={handleIncreaseQuantity}
+              handleQuantity={handleQuantity}
+              handleDeleteCart={handleDeleteCart}
+            />
           ))}
 
           <div className="text-right mt-5">
@@ -202,6 +190,25 @@ export default function page({}: Props) {
                 ? getTotalPrice(usePoin).toLocaleString('id-ID')
                 : getTotalPrice().toLocaleString('id-ID')}
             </h3>
+          </div>
+
+          <div className="">
+            <p className="text-left">Available Voucher:</p>
+            {userVoucher.map((voucher: any) => (
+              <div className="border-[1px] px-5 py-3 flex justify-between rounded-2xl w-full">
+                <p>{voucher.Voucher.voucher_name}</p>
+                <div className="flex">
+                  <p>{voucher.Voucher.voucher_desc}</p>
+                  <Switch
+                    onCheckedChange={(e: boolean) => {
+                      setVoucher(voucher.Voucher.id);
+                      setVoucherAmount(e ? voucher.Voucher.amount : 0);
+                      setVoucherType(voucher.Voucher.voucher_type);
+                    }}
+                  />
+                </div>
+              </div>
+            ))}
           </div>
         </div>
         <button

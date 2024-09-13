@@ -55,12 +55,21 @@ export class AdminController {
     }
   }
 
-  async createReview(req: Request, res: Response){
+  // async createReview(req: Request, res: Response) {
+  //   try {
+  //   } catch (error) {}
+  // }
+
+  async updateEvent(req: Request, res: Response) {
     try {
-      const data = await AdminService
-    } catch (error) {
-      
+      console.log(req.body, 'ini req di controller');
+
+      const data = await AdminService.updateEvent(req);
+      // console.log(data);
+
+      return res.send(responseHandle('update event success', data));
+    } catch {
+      throw new ErrorHandler('update event failed', 400);
     }
   }
-
 }

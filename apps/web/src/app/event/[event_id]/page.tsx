@@ -1,4 +1,5 @@
 'use client';
+import { discountPrice } from '@/action/helper.action';
 import { addToCart } from '@/action/user.action';
 import { api } from '@/config/axios.config';
 import { useSession } from 'next-auth/react';
@@ -119,10 +120,14 @@ export default function Page({ params }: Props) {
               <div className="flex flex-col gap-4 text-left">
                 <p className="font-bold text-lg">{ticket.ticket_type}</p>
                 <p className="font-semibold">
-                  {ticket.price.toLocaleString('id-ID', {
-                    style: 'currency',
-                    currency: 'IDR',
-                  })}
+                  {
+                    discountPrice(
+                      ticket.price,
+                      ticket.discount_price,
+                      ticket.disc_start_date,
+                      ticket.disc_end_date,
+                    ).tag
+                  }
                 </p>
               </div>
               <div className="content-center">

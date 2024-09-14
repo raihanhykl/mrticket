@@ -24,6 +24,15 @@ export class AdminRouter {
       validateToken,
       this.adminController.updateEvent,
     );
+    this.router.get(
+      '/event-organizer',
+      validateToken,
+      this.adminController.getEventByOrganizer,
+    );
+    this.router.get(
+      '/event-transaction/:event_id',
+      this.adminController.getEventTransaction,
+    );
     this.router.get(`/event/:event_id`, this.adminController.getEventDetail);
     this.router.get(
       `/event-ticket/:event_id`,

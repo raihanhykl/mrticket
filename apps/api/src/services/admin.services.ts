@@ -177,4 +177,105 @@ export class AdminService {
       console.log('ini error', error);
     }
   }
+
+  static async getEventByOrganizer(req: Request) {
+    try {
+      const data = await prisma.event.findMany({
+        where: {
+          userId: Number(req.user.id),
+        },
+      });
+      return data;
+    } catch (error) {
+      throw new ErrorHandler('Failed to get data', 400);
+    }
+  }
+
+  static async getTransactionByEvent(req: Request) {
+    try {
+      // const data = await prisma.transaction.findMany({
+      //   where: {
+      //     id: Number(req.params.transaction_id),
+      //   },
+      // });
+
+      const groupedResult = await prisma.transactionDetail.groupBy({
+        by: ['ticketId'], // Mengelompokkan berdasarkan ticketId
+        _sum: {
+          quantity: true, // Menghitung total quantity per ticket type
+        },
+        where: {
+          Ticket: {
+            Event: {
+              userId: 8, // Memfilter event berdasarkan userId
+              id: Number(req.params.event_id),
+            },
+          },
+        },
+      });
+
+      const detailedResult = await Promise.all(
+        groupedResult.map(async (item) => {
+          // Ambil detail tiket dan event
+          const ticketDetail = await prisma.ticket.findUnique({
+            where: { id: Number(item.ticketId) },
+            select: {
+              ticket_type: true,
+              Event: {
+                select: {
+                  event_name: true,
+                  userId: true, // Ambil userId dari event
+                },
+              },
+            },
+          });
+
+          // Ambil detail transaksi untuk mendapatkan user
+          const transactionDetail = await prisma.transactionDetail.findMany({
+            where: { ticketId: item.ticketId },
+            select: {
+              Transaction: {
+                select: {
+                  User: {
+                    select: {
+                      first_name: true,
+                      last_name: true,
+                      email: true,
+                    },
+                  },
+                },
+              },
+            },
+          });
+
+          return {
+            ticketId: item.ticketId,
+            ticket_type: ticketDetail?.ticket_type,
+            event_name: ticketDetail?.Event?.event_name,
+            quantity: item._sum.quantity,
+            user:
+              transactionDetail.length > 0
+                ? transactionDetail[0].Transaction
+                : null,
+          };
+        }),
+      );
+
+      // let data: any = [];
+
+      // groupedResult.map((item) => {
+      //   data.push({ quantity: item._sum.quantity, ticket_type: item.ticketId, userId: item. });
+      // });
+
+      return detailedResult;
+    } catch (error) {
+      throw new ErrorHandler('Failed to get data', 400);
+    }
+  }
+
+  static async getTotalTransactionByDate(req: Request) {
+    try {
+      // const data = await prisma.transactionDetail.groupBy({});
+    } catch (error) {}
+  }
 }

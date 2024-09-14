@@ -55,10 +55,24 @@ export class AdminController {
     }
   }
 
-  // async createReview(req: Request, res: Response) {
-  //   try {
-  //   } catch (error) {}
-  // }
+  async getEventByOrganizer(req: Request, res: Response) {
+    try {
+      const data = await AdminService.getEventByOrganizer(req);
+      return res.send(responseHandle('get event success', data));
+    } catch {
+      throw new ErrorHandler('get event failed', 400);
+    }
+  }
+
+  async getEventTransaction(req: Request, res: Response) {
+    try {
+      const data = await AdminService.getTransactionByEvent(req);
+      console.log(data);
+      return res.send(responseHandle('get transaction success', data));
+    } catch {
+      throw new ErrorHandler('get transaction failed', 400);
+    }
+  }
 
   async updateEvent(req: Request, res: Response) {
     try {
@@ -72,4 +86,6 @@ export class AdminController {
       throw new ErrorHandler('update event failed', 400);
     }
   }
+
+  
 }

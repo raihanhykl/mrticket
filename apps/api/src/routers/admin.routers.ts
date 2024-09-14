@@ -31,6 +31,7 @@ export class AdminRouter {
     );
     this.router.get(
       '/event-transaction/:event_id',
+      validateToken,
       this.adminController.getEventTransaction,
     );
     this.router.get(`/event/:event_id`, this.adminController.getEventDetail);
@@ -40,6 +41,7 @@ export class AdminRouter {
     );
     this.router.get(
       '/get-transaction-by-date/:date',
+      validateToken,
       this.adminController.getTotalTransactionByDate,
     );
   }

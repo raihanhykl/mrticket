@@ -207,7 +207,7 @@ export class AdminService {
         where: {
           Ticket: {
             Event: {
-              userId: 8, // Memfilter event berdasarkan userId
+              userId: Number(req.user.id), // Memfilter event berdasarkan userId
               id: Number(req.params.event_id),
             },
           },
@@ -278,7 +278,8 @@ export class AdminService {
       let params = req.params.date;
       let today = new Date();
       let trigger;
-
+  
+      // Tentukan `trigger` berdasarkan parameter
       if (String(params) === 'daily') {
         trigger = new Date();
       } else if (String(params) === 'weekly') {
@@ -289,8 +290,9 @@ export class AdminService {
       } else if (String(params) === 'yearly') {
         trigger = new Date(today.getFullYear(), 0, 1);
       }
-
-      const data = await prisma.transactionDetail.groupBy({
+  
+      // Ambil data yang dikelompokkan berdasarkan `ticketId`
+      const groupedData = await prisma.transactionDetail.groupBy({
         by: ['ticketId'],
         _sum: {
           quantity: true,
@@ -304,16 +306,44 @@ export class AdminService {
           },
           Ticket: {
             Event: {
-              userId: 8,
+              userId: Number(req.user.id),
             },
           },
         },
       });
-
-      return data;
+  
+      // Gunakan `Promise.all` untuk mengambil `ticket_type` dan `event_name` setelah `groupBy`
+      const detailedData = await Promise.all(
+        groupedData.map(async (group) => {
+          // Ambil detail tiket dan event berdasarkan `ticketId`
+          const ticketDetails = await prisma.ticket.findUnique({
+            where: {
+              id: Number(group.ticketId),
+            },
+            select: {
+              ticket_type: true,
+              Event: {
+                select: {
+                  event_name: true,
+                },
+              },
+            },
+          });
+  
+          return {
+            ticketId: group.ticketId,
+            ticket_type: ticketDetails?.ticket_type || 'Unknown',
+            event_name: ticketDetails?.Event?.event_name || 'Unknown',
+            quantity: group._sum.quantity || 0,
+          };
+        })
+      );
+  
+      return detailedData;
     } catch (error) {
       console.error(error);
       throw error;
     }
   }
+  
 }

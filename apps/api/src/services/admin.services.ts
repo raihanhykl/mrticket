@@ -275,7 +275,45 @@ export class AdminService {
 
   static async getTotalTransactionByDate(req: Request) {
     try {
-      // const data = await prisma.transactionDetail.groupBy({});
-    } catch (error) {}
+      let params = req.params.date;
+      let today = new Date();
+      let trigger;
+
+      if (String(params) === 'daily') {
+        trigger = new Date();
+      } else if (String(params) === 'weekly') {
+        trigger = new Date();
+        trigger.setDate(trigger.getDate() - 7);
+      } else if (String(params) === 'monthly') {
+        trigger = new Date(today.getFullYear(), today.getMonth(), 1);
+      } else if (String(params) === 'yearly') {
+        trigger = new Date(today.getFullYear(), 0, 1);
+      }
+
+      const data = await prisma.transactionDetail.groupBy({
+        by: ['ticketId'],
+        _sum: {
+          quantity: true,
+        },
+        where: {
+          Transaction: {
+            transaction_date: {
+              gte: trigger,
+              lte: new Date(),
+            },
+          },
+          Ticket: {
+            Event: {
+              userId: 8,
+            },
+          },
+        },
+      });
+
+      return data;
+    } catch (error) {
+      console.error(error);
+      throw error;
+    }
   }
 }

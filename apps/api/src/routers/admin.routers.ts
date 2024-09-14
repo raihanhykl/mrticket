@@ -38,6 +38,10 @@ export class AdminRouter {
       `/event-ticket/:event_id`,
       this.adminController.getEventTicket,
     );
+    this.router.get(
+      '/get-transaction-by-date/:date',
+      this.adminController.getTotalTransactionByDate,
+    );
   }
   public getRouter() {
     return this.router;

@@ -87,5 +87,13 @@ export class AdminController {
     }
   }
 
-  
+  async getTotalTransactionByDate(req: Request, res: Response) {
+    try {
+      const data = await AdminService.getTotalTransactionByDate(req);
+      console.log(data);
+      return res.send(responseHandle('get transaction success', data));
+    } catch {
+      throw new ErrorHandler('get transaction failed', 400);
+    }
+  }
 }

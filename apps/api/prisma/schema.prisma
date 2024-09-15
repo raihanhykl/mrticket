@@ -59,6 +59,7 @@ model Event {
   start_time String
   end_time   String
   image      String?
+  is_active  Int      @default(1)
   category   Category
   ticket     Ticket[]
   review     Review[]

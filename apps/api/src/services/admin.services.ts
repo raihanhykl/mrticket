@@ -2,11 +2,16 @@ import { ErrorHandler } from '@/helpers/response';
 import prisma from '@/prisma';
 import { Prisma } from '@prisma/client';
 import { Request } from 'express';
+import { Category } from '@prisma/client';
 
 export class AdminService {
   static async getEvent(req: Request) {
     try {
-      const data = await prisma.event.findMany({});
+      const data = await prisma.event.findMany({
+        where:{
+          is_active: 1
+        }
+      });
       return data;
     } catch (error) {
       throw new ErrorHandler('Failed to get data', 400);
@@ -16,13 +21,18 @@ export class AdminService {
   static async searchEvent(req: Request) {
     try {
       const search = req.query.search;
-      console.log(search, 'testtttttt');
+      const category = req.query.category;
+      const parsedCategory = (category as Category) || undefined;
+      // console.log(search, 'testtttttt');
+      // console.log(parsedCategory, ' ini parsed', category, ' ini category');
 
       const data = await prisma.event.findMany({
         where: {
+          category: parsedCategory,
           event_name: {
             contains: String(search),
           },
+          is_active: 1
         },
       });
 
@@ -37,6 +47,7 @@ export class AdminService {
       const data = await prisma.event.findUnique({
         where: {
           id: Number(req.params.event_id),
+          is_active: 1
         },
       });
       return data;
@@ -183,6 +194,8 @@ export class AdminService {
       const data = await prisma.event.findMany({
         where: {
           userId: Number(req.user.id),
+          // is_active: 1
+
         },
       });
       return data;
@@ -200,14 +213,14 @@ export class AdminService {
       // });
 
       const groupedResult = await prisma.transactionDetail.groupBy({
-        by: ['ticketId'], // Mengelompokkan berdasarkan ticketId
+        by: ['ticketId'],
         _sum: {
-          quantity: true, // Menghitung total quantity per ticket type
+          quantity: true, 
         },
         where: {
           Ticket: {
             Event: {
-              userId: Number(req.user.id), // Memfilter event berdasarkan userId
+              userId: Number(req.user.id), 
               id: Number(req.params.event_id),
             },
           },
@@ -216,7 +229,6 @@ export class AdminService {
 
       const detailedResult = await Promise.all(
         groupedResult.map(async (item) => {
-          // Ambil detail tiket dan event
           const ticketDetail = await prisma.ticket.findUnique({
             where: { id: Number(item.ticketId) },
             select: {
@@ -224,13 +236,12 @@ export class AdminService {
               Event: {
                 select: {
                   event_name: true,
-                  userId: true, // Ambil userId dari event
+                  userId: true,
                 },
               },
             },
           });
 
-          // Ambil detail transaksi untuk mendapatkan user
           const transactionDetail = await prisma.transactionDetail.findMany({
             where: { ticketId: item.ticketId },
             select: {
@@ -278,7 +289,7 @@ export class AdminService {
       let params = req.params.date;
       let today = new Date();
       let trigger;
-  
+
       // Tentukan `trigger` berdasarkan parameter
       if (String(params) === 'daily') {
         trigger = new Date();
@@ -290,7 +301,7 @@ export class AdminService {
       } else if (String(params) === 'yearly') {
         trigger = new Date(today.getFullYear(), 0, 1);
       }
-  
+
       // Ambil data yang dikelompokkan berdasarkan `ticketId`
       const groupedData = await prisma.transactionDetail.groupBy({
         by: ['ticketId'],
@@ -311,7 +322,7 @@ export class AdminService {
           },
         },
       });
-  
+
       // Gunakan `Promise.all` untuk mengambil `ticket_type` dan `event_name` setelah `groupBy`
       const detailedData = await Promise.all(
         groupedData.map(async (group) => {
@@ -329,21 +340,20 @@ export class AdminService {
               },
             },
           });
-  
+
           return {
             ticketId: group.ticketId,
             ticket_type: ticketDetails?.ticket_type || 'Unknown',
             event_name: ticketDetails?.Event?.event_name || 'Unknown',
             quantity: group._sum.quantity || 0,
           };
-        })
+        }),
       );
-  
+
       return detailedData;
     } catch (error) {
       console.error(error);
       throw error;
     }
   }
-  
 }

@@ -82,8 +82,16 @@ export default function page({}: Props) {
               <Link href={`/dashboard-event/${event.id}`}>
                 <div className="border-[1px] px-5 py-3 rounded-2xl w-full">
                   <div className="flex justify-between">
-                    <p>{event.event_name}</p>
-                    <div className="flex gap-5 text-sm">
+                    <div className="flex gap-3">
+                      <p>{event.event_name}</p>
+                      {event.is_active ? (
+                        <p className="text-green-500">Active</p>
+                      ) : (
+                        <p className="text-red-500">Inactive</p>
+                      )}
+                    </div>
+                    {event.is_active ? (
+                      <div className="flex gap-5 text-sm">
                       <Link href={`update-event/${event.id}`}>
                         <p className="text-[#003899]">Edit</p>
                       </Link>
@@ -91,6 +99,10 @@ export default function page({}: Props) {
                         <p className="text-red-500">Delete</p>
                       </Link>
                     </div>
+                    ) : (
+                    <div className=""></div>
+                    )}
+
                   </div>
                 </div>
               </Link>

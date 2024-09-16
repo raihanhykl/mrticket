@@ -1,0 +1,35 @@
+import nodemailer from 'nodemailer';
+import { NODEMAILER_EMAIL, NODEMAILER_PASSWORD } from '@/config';
+import { readFileSync } from 'fs';
+import path from 'path';
+import { join } from 'path';
+import { compile } from 'handlebars';
+
+export const transporter = nodemailer.createTransport({
+  service: 'gmail',
+  auth: {
+    user: NODEMAILER_EMAIL,
+    pass: NODEMAILER_PASSWORD,
+  },
+});
+
+export const sendVerificationEmail = (
+  to: string,
+  data: {
+    email: string;
+    verification_url: string;
+  },
+) => {
+  console.log('to: ', to, ' data: ', data);
+  const templatePath = join(__dirname, '../templates/', 'verification.hbs');
+  const templateSource = readFileSync(templatePath, 'utf-8');
+  const compiledTemplate = compile(templateSource);
+  const html = compiledTemplate(data);
+  const mailOptions: nodemailer.SendMailOptions = {
+    to,
+    subject: 'please verifty your account',
+    html,
+  };
+
+  return transporter.sendMail(mailOptions);
+};

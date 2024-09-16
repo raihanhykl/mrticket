@@ -2,9 +2,11 @@ import prisma from '@/prisma';
 import { Prisma } from '@prisma/client';
 import { NextFunction, Request } from 'express';
 import { compare, hash } from 'bcrypt';
-import { generateToken } from '@/lib/jwt';
+import { generateTokeEmailVerification, generateToken } from '@/lib/jwt';
 import { ErrorHandler } from '@/helpers/response';
-import { IUser } from '@/interfaces/user';
+import IUser from '@/interfaces/user';
+import { sendVerificationEmail } from '@/lib/nodemailer';
+import { verification_url } from '@/config';
 
 export class AuthSerivce {
   static async login(req: Request) {
@@ -22,6 +24,9 @@ export class AuthSerivce {
 
     if (!user) {
       throw new ErrorHandler('User not found', 400);
+    }
+    if (user.is_verified == false) {
+      throw new ErrorHandler('User not verified', 400);
     }
     const checkPassword = await compare(password, user.password!);
     if (checkPassword) {
@@ -96,10 +101,36 @@ export class AuthSerivce {
               ),
             },
           });
+
+          const token = generateTokeEmailVerification({ email });
+          return sendVerificationEmail(email, {
+            email,
+            verification_url: verification_url + token,
+          });
         }
       } catch (error) {
         throw new ErrorHandler((error as Error).message, 400);
       }
+    });
+  }
+  static async verifyEmail(req: Request) {
+    const { email } = req.user;
+
+    const user = await prisma.user.findUnique({
+      where: {
+        email,
+      },
+    });
+    if (!user) throw new ErrorHandler('User not found', 400);
+    else if (user.is_verified)
+      throw new ErrorHandler('User already verified', 400);
+    await prisma.user.update({
+      where: {
+        email,
+      },
+      data: {
+        is_verified: true,
+      },
     });
   }
 }

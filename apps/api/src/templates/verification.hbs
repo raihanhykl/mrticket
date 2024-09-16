@@ -1,0 +1,34 @@
+<html lang='en'>
+  <head>
+    <meta charset='UTF-8' />
+    <meta name='viewport' content='width=device-width, initial-scale=1.0' />
+    <title>Verification</title>
+    <style>
+      body { background-color: #f1f3f4; display: flex; justify-content: center;
+      align-items: center; } .content { background-color: white; max-width:
+      300px; /* aspect-ratio: 1; */ width: 100%; margin: 10px; text-align:
+      center; font-family: sans-serif; padding: 25px; box-shadow: 1px 1px 10px
+      4px rgb(194, 192, 192); border-radius: 5px; } h2 { color: #c5152c;
+      text-shadow: 1px 1.5px 2px rgb(175, 174, 174); margin-bottom: 5px; } h5 {
+      max-width: 250px; margin: auto; margin-bottom: 10px; margin-top: 10px; } p
+      { color: rgb(175, 174, 174); font-size: 10px; max-width: 250px; margin:
+      auto; } button { padding: 15px 0px; width: 100%; color: white;
+      background-color: #c5152c; border: none; border-radius: 5px; margin: 15px
+      0px; font-weight: 600; }
+    </style>
+  </head>
+  <body>
+    <div class='content'>
+      <h2>LOKET.com</h2>
+
+      <h5>Hi {{email}}, Please check your email for verification</h5>
+      <p>
+        please click on the link below to verify your email, if you did not
+        receive the email please check your spam folder or contact support
+      </p>
+
+      <a href='{{verification_url}}'><button>Verify Email</button></a>
+      <p>if you have any issue, please contact our customer service</p>
+    </div>
+  </body>
+</html>

@@ -21,4 +21,12 @@ export class AuthController {
       next(error);
     }
   }
+  async verification(req: Request, res: Response, next: NextFunction) {
+    try {
+      AuthSerivce.verifyEmail(req);
+      return res.send(responseHandle('verification success', null));
+    } catch (error) {
+      next(error);
+    }
+  }
 }

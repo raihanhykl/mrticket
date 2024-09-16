@@ -1,5 +1,6 @@
 import { JWT_SECRET } from '@/config';
-import { IUser } from '@/interfaces/user';
+import IUser from '@/interfaces/user';
+
 import { NextFunction, Request, Response } from 'express';
 import { verify } from 'jsonwebtoken';
 
@@ -12,8 +13,7 @@ export const validateToken = (
   // console.log(token);
   // console.log(req.headers.authorization, 'cek');
   // console.log(req.body, 'ini req body');
-  
-  
+
   if (!token) {
     return res.status(401).send({ message: 'Unauthorized' });
   }

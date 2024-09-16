@@ -29,6 +29,7 @@ model User {
   f_referral_code String?
   poin            Int
   exp_poin        DateTime?
+  is_verified     Boolean       @default(false)
   event           Event[]
   review          Review[]
   voucher         Voucher[]

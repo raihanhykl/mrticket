@@ -1,5 +1,17 @@
 'use client';
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from '@/components/ui/dialog';
+import { Button } from '@/components/ui/button';
+
 import { api } from '@/config/axios.config';
+import { DialogClose } from '@radix-ui/react-dialog';
 import { useSession } from 'next-auth/react';
 import Link from 'next/link';
 import React, { useEffect, useState } from 'react';
@@ -13,6 +25,8 @@ export default function page({}: Props) {
   const [transactionWeekly, setTransactionWeekly] = useState([]);
   const [transactionMonthly, setTransactionMonthly] = useState([]);
   const [transactionYearly, setTransactionYearly] = useState([]);
+  const [open, setOpen] = useState(false);
+  const [submit, setSubmit] = useState(false);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -67,7 +81,17 @@ export default function page({}: Props) {
     if (session.status == 'authenticated') {
       fetchData();
     }
-  }, [session]);
+  }, [session, submit]);
+
+  const handleDelete = async (id: number) => {
+    try {
+      await api.patch(`/admin/delete-event?event_id=${id}`);
+      setOpen(false);
+      setSubmit((prev) => !prev);
+    } catch (error) {
+      console.log(error);
+    }
+  };
 
   return (
     <div className="max-w-screen-xl p-5">
@@ -79,7 +103,8 @@ export default function page({}: Props) {
           <p className="font-semibold">Your Event</p>
           <div className="">
             {event.map((event: any) => (
-              <Link href={`/dashboard-event/${event.id}`}>
+              <Link href={``}>
+                {/* /dashboard-event/${event.id} */}
                 <div className="border-[1px] px-5 py-3 rounded-2xl w-full">
                   <div className="flex justify-between">
                     <div className="block md:flex gap-3">
@@ -92,17 +117,41 @@ export default function page({}: Props) {
                     </div>
                     {event.is_active ? (
                       <div className="flex gap-5 text-sm">
-                      <Link href={`update-event/${event.id}`}>
-                        <p className="text-[#003899]">Edit</p>
-                      </Link>
-                      <Link href={`delete-event/${event.id}`}>
-                        <p className="text-red-500">Delete</p>
-                      </Link>
-                    </div>
+                        <Link href={`update-event/${event.id}`}>
+                          <p className="text-[#003899]">Edit</p>
+                        </Link>
+                        {/* <Link href={`delete-event/${event.id}`}>
+                          <p className="text-red-500">Delete</p>
+                        </Link> */}
+                        <Dialog open={open} onOpenChange={setOpen}>
+                          <DialogTrigger>Delete</DialogTrigger>
+                          <DialogContent>
+                            <DialogHeader>
+                              <DialogTitle>
+                                Are you absolutely sure?
+                              </DialogTitle>
+                              <DialogDescription>
+                                This action cannot be undone. This will
+                                permanently delete your event and remove it from
+                                our servers.
+                              </DialogDescription>
+                            </DialogHeader>
+                            <DialogFooter>
+                              <DialogClose>Cancel</DialogClose>
+                              <Button
+                                variant="destructive"
+                                type="submit"
+                                onClick={() => handleDelete(event.id)}
+                              >
+                                Delete
+                              </Button>
+                            </DialogFooter>
+                          </DialogContent>
+                        </Dialog>
+                      </div>
                     ) : (
-                    <div className=""></div>
+                      <div className=""></div>
                     )}
-
                   </div>
                 </div>
               </Link>

@@ -101,7 +101,6 @@ export class AdminService {
           event_name: {
             contains: String(search),
           },
-
           is_active: 1,
         },
         skip: skip,
@@ -278,6 +277,22 @@ export class AdminService {
     } catch (error) {
       throw new ErrorHandler('Failed to get data', 400);
     }
+  }
+
+  static async deleteEvent(req: Request) {
+    try {
+      const { event_id } = req.query;
+      console.log(event_id, 'ini event ID');
+      const data: Prisma.EventUpdateInput = {
+        is_active: 0,
+      };
+      return await prisma.event.update({
+        where: {
+          id: Number(event_id),
+        },
+        data,
+      });
+    } catch (error) {}
   }
 
   static async getTransactionByEvent(req: Request) {

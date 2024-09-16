@@ -18,6 +18,7 @@ export class AdminRouter {
     this.router.post('/create-ticket', this.adminController.createTicket);
     this.router.get('/search', this.adminController.searchEvent);
     this.router.get('/event', this.adminController.getEvent);
+    this.router.patch('/delete-event', this.adminController.deleteEvent);
     this.router.post(
       '/update-event',
       uploader('EVENT', 'events').single('image'),

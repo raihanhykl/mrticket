@@ -46,6 +46,14 @@ export class AdminController {
       throw new ErrorHandler('create event failed', 400);
     }
   }
+  async deleteEvent(req: Request, res: Response) {
+    try {
+      const data = await AdminService.deleteEvent(req);
+      return res.send(responseHandle('delete event success', data));
+    } catch {
+      throw new ErrorHandler('delete event failed', 400);
+    }
+  }
   async createTicket(req: Request, res: Response) {
     try {
       const data = await AdminService.createTicket(req);

@@ -73,7 +73,7 @@ export default function page({}: Props) {
     <div className="max-w-screen-xl p-5">
       <div className="flex flex-col gap-3">
         <div className="text-left p-5 border-2 rounded-xl shadow-md">
-          <p className="font-bold text-2xl">Dashboard</p>
+          <p className="font-bold text-xl md:text-2xl">Dashboard</p>
         </div>
         <div className="text-left p-5 border-2 rounded-xl shadow-md">
           <p className="font-semibold">Your Event</p>
@@ -82,7 +82,7 @@ export default function page({}: Props) {
               <Link href={`/dashboard-event/${event.id}`}>
                 <div className="border-[1px] px-5 py-3 rounded-2xl w-full">
                   <div className="flex justify-between">
-                    <div className="flex gap-3">
+                    <div className="block md:flex gap-3">
                       <p>{event.event_name}</p>
                       {event.is_active ? (
                         <p className="text-green-500">Active</p>

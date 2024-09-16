@@ -75,19 +75,19 @@ export default function Page({ params }: Props) {
   };
 
   return (
-    <div className="max-w-screen-xl p-9">
-      <div className="flex gap-8">
+    <div className="max-w-screen-xl p-5 md:p-9 mx-auto">
+      <div className="flex flex-col lg:flex-row gap-8">
         <img
-          className="rounded-xl w-[65%] h-auto max-h-[500px] object-cover shadow-md"
+          className="rounded-xl w-full lg:w-[65%] h-auto max-h-[500px] object-cover shadow-md"
           src={
             event.image
               ? 'http://localhost:8000/events/' + event.image
-              : 'https://assets.loket.com/neo/production/images/banner/20240423043810.jpg'
+              : 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRZzHDbVL49ogGcSz6il6oYJkaYXbQvVwr1tw&s'
           }
           alt=""
         />
-        <div className="shadow-md border-[1px] w-full text-left p-7 rounded-xl content-center">
-          <p className="text-2xl font-semibold">{event.event_name}</p>
+        <div className="shadow-md border-[1px] w-full text-left p-5 lg:p-7 rounded-xl items-center content-center">
+          <p className="text-xl lg:text-2xl font-semibold">{event.event_name}</p>
           <div className="py-5 grid gap-2">
             <p>
               {new Date(event.start_date).getDate()}{' '}
@@ -105,7 +105,7 @@ export default function Page({ params }: Props) {
       </div>
 
       <div className="text-left py-5">
-        <div className="max-w-[65%]">
+        <div className="max-w-full lg:max-w-[65%]">
           <p>{event.event_desc}</p>
         </div>
       </div>
@@ -114,7 +114,7 @@ export default function Page({ params }: Props) {
         {tickets.map((ticket) => (
           <div
             key={ticket.id}
-            className="flex border-[2px] my-3 shadow-sm rounded-sm"
+            className="flex flex-col lg:flex-row border-[2px] my-3 shadow-sm rounded-sm"
           >
             <div className="p-5 flex justify-between w-full">
               <div className="flex flex-col gap-4 text-left">
@@ -135,7 +135,7 @@ export default function Page({ params }: Props) {
                 <div className="flex gap-3 content-center justify-center items-center text-center text-sm">
                   <p>Quantity:</p>
                   <input
-                    className="rounded-xl border-[#b5b7ba]"
+                    className="rounded-xl border-[#b5b7ba] w-[60px]"
                     type="number"
                     id="quantity"
                     name={`quantity_${ticket.id}`}
@@ -146,7 +146,6 @@ export default function Page({ params }: Props) {
                       handleQuantityChange(ticket.id, parseInt(e.target.value))
                     }
                   />
-                  {/* <input type="number" id="quantity" name="quantity" min="1" max="5"></input> */}
                 </div>
               </div>
             </div>
@@ -155,7 +154,7 @@ export default function Page({ params }: Props) {
 
         <div className="flex justify-end">
           <button
-            className="bg-[#0049cc] text-white p-3 rounded-lg border-[1px] content-end"
+            className="bg-[#0049cc] text-white p-3 rounded-lg border-[1px] content-end w-full lg:w-auto"
             type="submit"
           >
             Add to Cart

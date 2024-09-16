@@ -3,10 +3,10 @@ import Link from 'next/link';
 export const Footer = () => {
   return (
     <div>
-      <div className="bg-[#112041] flex text-white justify-center gap-[60px] py-10">
+      <div className="bg-[#112041] grid grid-cols-1 sm:flex items-center text-white justify-center gap-[60px] py-10">
         <div className="grid gap-2">
-          <p className="font-semibold text-left">Tentang Loket</p>
-          <div className="grid text-left text-sm">
+          <p className="font-semibold sm:text-left">Tentang Loket</p>
+          <div className="grid sm:text-left text-sm">
             <Link href="">Masuk</Link>
             <Link href="">Biaya</Link>
             <Link href="">Lihat Event</Link>
@@ -17,8 +17,8 @@ export const Footer = () => {
           </div>
         </div>
         <div className="grid gap-2">
-          <p className="font-semibold text-left">Rayakan Eventmu</p>
-          <div className="grid text-left text-sm">
+          <p className="font-semibold sm:text-left">Rayakan Eventmu</p>
+          <div className="grid sm:text-left text-sm">
             <Link href="">Cara Mempersiapkan Event</Link>
             <Link href="">Cara membuat Event Lomba</Link>
             <Link href="">Cara membuat Event Lomba</Link>
@@ -30,22 +30,21 @@ export const Footer = () => {
         </div>
 
         <div className="grid gap-4">
-          <p className="font-semibold text-left">Lokasi Event</p>
-          <div className="grid text-left text-sm">
+          <p className="font-semibold sm:text-left">Lokasi Event</p>
+          <div className="grid sm:text-left text-sm">
             <Link href="">Jakarta</Link>
             <Link href="">Bandung</Link>
             <Link href="">Yogyakarta</Link>
             <Link href="">Surabaya</Link>
             <Link href="">Solo</Link>
-            <Link href="">Medan</Link>
             <Link href="">Bali</Link>
             <Link href="">Semua Kota</Link>
           </div>
         </div>
 
         <div className="grid gap-4">
-          <p className="font-semibold text-left">Inspirasi Event</p>
-          <div className="grid text-left text-sm">
+          <p className="font-semibold sm:text-left">Inspirasi Event</p>
+          <div className="grid sm:text-left text-sm">
             <Link href="">Festival</Link>
             <Link href="">Konser</Link>
             <Link href="">Olahraga</Link>
@@ -57,7 +56,7 @@ export const Footer = () => {
         </div>
       </div>
       <div className="bg-[#1d3976] text-white py-[55px] text-sm">
-        <div className="flex gap-5 justify-center">
+        <div className="grid grid-cols-1 gap-1 sm:flex sm:gap-5 justify-center">
           <Link href="">Tentang Kami</Link>
           <Link href="">Blog</Link>
           <Link href="">Kebijakan Privasi</Link>

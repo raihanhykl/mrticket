@@ -165,26 +165,22 @@ export default function page({}: Props) {
   return (
     <>
       <form onSubmit={handleSubmit}>
-        <div className="flex flex-col gap-2 py-5 max-w-screen-xl px-5 border-2">
+        <div className="flex flex-col gap-2 py-5 max-w-screen-xl px-5 border-2 mx-auto">
           {carts.map((cart: any) => (
             <Cart
               key={cart.id}
               cart={cart}
-              // handleDecreaseQuantity={handleDecreaseQuantity}
-              // handleIncreaseQuantity={handleIncreaseQuantity}
               handleQuantity={handleQuantity}
               handleDeleteCart={handleDeleteCart}
             />
           ))}
 
           <div className="text-right mt-5">
-            <div>
-              Use {poin} Poin?{' '}
-              <span>
-                <Switch onCheckedChange={(e) => setUsePoin(e)} />
-              </span>
+            <div className="flex items-center justify-end gap-2 text-sm">
+              <p>Use {poin} Poin?</p>
+              <Switch onCheckedChange={(e) => setUsePoin(e)} />
             </div>
-            <h3 className="text-xl font-bold">
+            <h3 className=" text-lg md:text-xl font-bold">
               Total Price: Rp.{' '}
               {usePoin
                 ? getTotalPrice(usePoin).toLocaleString('id-ID')
@@ -192,13 +188,16 @@ export default function page({}: Props) {
             </h3>
           </div>
 
-          <div className="">
-            <p className="text-left">Available Voucher:</p>
+          <div className="mt-5">
+            <p className="text-left font-semibold mb-2">Available Voucher:</p>
             {userVoucher.map((voucher: any) => (
-              <div className="border-[1px] px-5 py-3 flex justify-between rounded-2xl w-full">
+              <div
+                key={voucher.Voucher.id}
+                className="border-[1px] px-5 py-3 flex flex-col md:flex-row justify-between rounded-2xl w-full mb-2"
+              >
                 <p>{voucher.Voucher.voucher_name}</p>
-                <div className="flex">
-                  <p>{voucher.Voucher.voucher_desc}</p>
+                <div className="flex items-center justify-between gap-2 md:gap-5">
+                  <p className="text-sm">{voucher.Voucher.voucher_desc}</p>
                   <Switch
                     onCheckedChange={(e: boolean) => {
                       setVoucher(voucher.Voucher.id);
@@ -210,13 +209,14 @@ export default function page({}: Props) {
               </div>
             ))}
           </div>
-        </div>
-        <button
+          <button
           type="submit"
-          className="my-5 btn btn-primary p-3 rounded-2xl border-[1px] content-end"
+          className="my-5 btn btn-primary p-3 rounded-2xl border-[1px] w-full md:w-auto px-5"
         >
           Checkout
         </button>
+        </div>
+        
       </form>
     </>
   );

@@ -51,8 +51,8 @@ export default function page({}: Props) {
           src="https://assets.loket.com/web/assets/img/logo-loket-blue.svg"
           alt=""
         />
-        <div className=" flex justify-around max-w-screen-xl py-[100px] h-full items-center content-center">
-          <div className="">
+        <div className="flex justify-around max-w-screen-xl py-[100px] h-full items-center content-center">
+          <div className="hidden md:block">
             <img
               src="https://assets.loket.com/web/assets/img/auth.svg"
               alt=""
@@ -66,7 +66,7 @@ export default function page({}: Props) {
             </p>
           </div>
           <div className="items-center content-center">
-            <div className="border-[1px] p-5 content-center items-center text-left w-[400px] shadow-lg rounded-md">
+            <div className="border-[1px] p-5 content-center items-center text-left max-w-[400px] shadow-lg rounded-md">
               <form onSubmit={handleSubmit(onSubmit)} className="grid gap-3">
                 {/* <label>Masukkan Email</label> */}
                 <p>Email</p>

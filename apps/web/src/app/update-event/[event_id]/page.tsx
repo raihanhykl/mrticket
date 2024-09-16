@@ -91,37 +91,37 @@ export default function Page({ params }: Props) {
 
   return (
     <div>
-      <div className="flex flex-col gap-7 items-center content-center py-[50px] text-sm text-left">
+      <div className="flex flex-col items-center content-center py-12 text-sm text-left">
         <img
           src="https://assets.loket.com/web/assets/img/logo-loket-blue.svg"
           alt="Logo"
+          className="mb-8"
         />
-        <div className="border p-5 w-[70%] shadow-lg rounded-md">
-          <p className="text-xl font-semibold text-center mt-3 mb-9">
-            Update Event
-          </p>
-          <form className="grid gap-3" onSubmit={handleSubmit(onSubmit)}>
-            <p>Event Image</p>
-            <input
-              type="file"
-              accept="image/*"
-              // value={event.image}
-              onChange={(e) => setSelectedFile(e.target.files?.[0] || null)}
-              // {...register("image")}
-              className="border w-full bg-[#F9FAFB] rounded-lg"
-            />
+        <div className="border p-5 w-full max-w-3xl shadow-lg rounded-md">
+          <p className="text-xl font-semibold text-center mt-3 mb-9">Update Event</p>
+          <form className="grid gap-5 text-left" onSubmit={handleSubmit(onSubmit)}>
+            {/* Event Image */}
+            <div>
+              <p>Event Image</p>
+              <input
+                type="file"
+                accept="image/*"
+                onChange={(e) => setSelectedFile(e.target.files?.[0] || null)}
+                className="border w-full bg-[#F9FAFB] rounded-lg"
+              />
+            </div>
+  
+            {/* Event Name */}
             <div>
               <p>Event Name</p>
               <input
                 type="text"
-                // defaultValue={event.event_name}
                 {...register('event_name')}
                 className="border w-full bg-[#F9FAFB] rounded-lg"
-                // defaultValue={event.event_name}
               />
               <ErrorMessage errors={errors} name="event_name" />
             </div>
-
+  
             {/* Event Description */}
             <div>
               <p>Event Description</p>
@@ -129,18 +129,16 @@ export default function Page({ params }: Props) {
                 type="text"
                 {...register('event_desc')}
                 className="border w-full bg-[#F9FAFB] rounded-lg"
-                // defaultValue={event.event_desc}
               />
               <ErrorMessage errors={errors} name="event_desc" />
             </div>
-
+  
             {/* Category */}
             <div>
               <p>Category</p>
               <select
                 {...register('category')}
                 className="bg-gray-50 border w-full rounded-lg"
-                // defaultValue={event.category}
               >
                 <option value="music">Music</option>
                 <option value="theatre">Theatre</option>
@@ -149,7 +147,7 @@ export default function Page({ params }: Props) {
               </select>
               <ErrorMessage errors={errors} name="category" />
             </div>
-
+  
             {/* Location */}
             <div>
               <p>Location</p>
@@ -157,66 +155,56 @@ export default function Page({ params }: Props) {
                 type="text"
                 {...register('location')}
                 className="border w-full bg-[#F9FAFB] rounded-lg"
-                // defaultValue={event.location}
               />
               <ErrorMessage errors={errors} name="location" />
             </div>
-
+  
             {/* Dates and Times */}
-            {/* <p>{event.start_date}</p> */}
-            <div className="flex gap-3">
-              <div className="w-full">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+              <div>
                 <p>Start Date</p>
                 <input
                   type="date"
                   {...register('start_date')}
                   className="border w-full bg-[#F9FAFB] rounded-lg"
-                  // value={event.start_date}
-                  // defaultValue={
-                  //   new Date(event.start_date).toISOString()?.split('T')[0]
-                  // }
                 />
                 <ErrorMessage errors={errors} name="start_date" />
               </div>
-
-              <div className="w-full">
+  
+              <div>
                 <p>End Date</p>
                 <input
                   type="date"
                   {...register('end_date')}
                   className="border w-full bg-[#F9FAFB] rounded-lg"
-                  // defaultValue={
-                  //   new Date(event.end_date).toISOString()?.split('T')[0]
-                  // }
                 />
                 <ErrorMessage errors={errors} name="end_date" />
               </div>
             </div>
-
-            <div className="flex gap-3">
-              <div className="w-full">
+  
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+              <div>
                 <p>Start Time</p>
                 <input
                   type="time"
                   {...register('start_time')}
                   className="border w-full bg-[#F9FAFB] rounded-lg"
-                  // defaultValue={event.start_time}
                 />
                 <ErrorMessage errors={errors} name="start_time" />
               </div>
-
-              <div className="w-full">
+  
+              <div>
                 <p>End Time</p>
                 <input
                   type="time"
                   {...register('end_time')}
                   className="border w-full bg-[#F9FAFB] rounded-lg"
-                  // defaultValue={event.end_time}
                 />
                 <ErrorMessage errors={errors} name="end_time" />
               </div>
             </div>
-
+  
+            {/* Submit Button */}
             <button
               type="submit"
               className="bg-[#0049cc] text-white p-2 my-3 rounded-lg"
@@ -228,4 +216,5 @@ export default function Page({ params }: Props) {
       </div>
     </div>
   );
+  
 }

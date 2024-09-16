@@ -7,24 +7,93 @@ import { Category } from '@prisma/client';
 export class AdminService {
   static async getEvent(req: Request) {
     try {
-      const data = await prisma.event.findMany({
-        where:{
-          is_active: 1
-        }
+      // const page = parseInt(req.query.page as string) || 1;
+      const page = Number(req.query.page) || 1;
+      console.log(page, 'ini pageee');
+      // const limit = parseInt(req.query.limit as string) || 10;
+      const limit = Number(req.query.limit) || 8;
+      const skip = (page - 1) * limit;
+
+      const total = await prisma.event.count({
+        where: {
+          is_active: 1,
+        },
       });
-      return data;
+
+      console.log(total);
+
+      const data = await prisma.event.findMany({
+        where: {
+          is_active: 1,
+        },
+        skip: skip,
+        take: limit,
+      });
+      return {
+        data,
+        total,
+        page,
+        limit,
+      };
     } catch (error) {
       throw new ErrorHandler('Failed to get data', 400);
     }
   }
+
+  // static async getEvent2(req: Request) {
+  //   try {
+  //     const page = Number(req.query.page) || 1;
+  //     const limit = Number(req.query.limit) || 8;
+  //     const skip = (page - 1) * limit;
+
+  //     // Hitung total event yang aktif
+  //     const total = await prisma.event.count({
+  //       where: {
+  //         is_active: 1,
+  //       },
+  //     });
+
+  //     // Ambil event berdasarkan pagination
+  //     const data = await prisma.event.findMany({
+  //       where: {
+  //         is_active: 1,
+  //       },
+  //       skip: skip,
+  //       take: limit,
+  //     });
+
+  //     return {
+  //       data,
+  //       total,  // Total event untuk keperluan pagination
+  //       page,
+  //       limit,
+  //     };
+  //   } catch (error) {
+  //     throw new ErrorHandler('Failed to get data', 400);
+  //   }
+  // }
 
   static async searchEvent(req: Request) {
     try {
       const search = req.query.search;
       const category = req.query.category;
       const parsedCategory = (category as Category) || undefined;
+      // const page = parseInt(req.query.page as string) || 1;
+      const page = Number(req.query.page);
+      console.log(page, 'ini pageee');
+
+      // const limit = parseInt(req.query.limit as string) || 10;
+      const limit = Number(req.query.limit) || 8;
+      const skip = (page - 1) * limit;
+
       // console.log(search, 'testtttttt');
       // console.log(parsedCategory, ' ini parsed', category, ' ini category');
+
+      const total = await prisma.event.count({
+        where: {
+          is_active: 1,
+        },
+      });
 
       const data = await prisma.event.findMany({
         where: {
@@ -32,11 +101,19 @@ export class AdminService {
           event_name: {
             contains: String(search),
           },
-          is_active: 1
+
+          is_active: 1,
         },
+        skip: skip,
+        take: limit,
       });
 
-      return data;
+      return {
+        data,
+        total,
+        page,
+        limit,
+      };
     } catch (error) {
       throw new ErrorHandler('failed to search event', 400);
     }
@@ -47,7 +124,7 @@ export class AdminService {
       const data = await prisma.event.findUnique({
         where: {
           id: Number(req.params.event_id),
-          is_active: 1
+          is_active: 1,
         },
       });
       return data;
@@ -195,7 +272,6 @@ export class AdminService {
         where: {
           userId: Number(req.user.id),
           // is_active: 1
-
         },
       });
       return data;
@@ -215,12 +291,12 @@ export class AdminService {
       const groupedResult = await prisma.transactionDetail.groupBy({
         by: ['ticketId'],
         _sum: {
-          quantity: true, 
+          quantity: true,
         },
         where: {
           Ticket: {
             Event: {
-              userId: Number(req.user.id), 
+              userId: Number(req.user.id),
               id: Number(req.params.event_id),
             },
           },

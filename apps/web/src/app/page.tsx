@@ -10,13 +10,13 @@ export default function Component() {
 
   useEffect(() => {
     const fetch = async () => {
-      const res = await api.get('/admin/event', {
+      const res = await api.get(`/admin/event/?page=1&limit=4`, {
         // params: {
         //   categoryId: category.id,
         // },
       });
 
-      setEvents(res.data.data);
+      setEvents(res.data.data.data);
     };
     fetch();
   }, []);
@@ -48,9 +48,9 @@ export default function Component() {
         </div>
 
         <div className="">
-          <h1 className="text-2xl font-semibold md:text-left">Event Pilihan</h1>
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 justify-items-center gap-5 mt-3 mb-5">
-            {events.slice(0, 4).map((event: any) => (
+          <h1 className="text-xl sm:text-2xl font-semibold md:text-left">Event Pilihan</h1>
+          <div className="grid grid-cols- sm:grid-cols-2 md:grid-cols-4 justify-items-center gap-5 mt-3 mb-5">
+            {events.map((event: any) => (
               <div key={event.id}>
                 <Link href={`/event/${event.id}`}>
                   <div className=" border-[1px] rounded-xl">
@@ -58,7 +58,7 @@ export default function Component() {
                       src={
                         event.image
                           ? 'http://localhost:8000/events/' + event.image
-                          : 'https://assets.loket.com/neo/production/images/banner/20240423043810.jpg'
+                          : 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRZzHDbVL49ogGcSz6il6oYJkaYXbQvVwr1tw&s'
                       }
                       alt="..."
                       className="w-[300px] h-[150px] object-cover rounded-t-xl"

@@ -84,180 +84,178 @@ export default function Page() {
   };
 
   return (
-    <div>
-      <div className="flex flex-col gap-7 items-center content-center py-[50px] text-sm text-left">
-        <img
-          src="https://assets.loket.com/web/assets/img/logo-loket-blue.svg"
-          alt="Logo"
-        />
-        <div className="border p-5 w-[70%] shadow-lg rounded-md">
-          <p className="text-xl font-semibold text-center mt-3 mb-9">
-            Add Event
-          </p>
-          <form className="grid gap-3" onSubmit={handleSubmit(onSubmit)}>
+    <div className="flex flex-col items-center justify-center py-12 text-sm text-left">
+      <img
+        src="https://assets.loket.com/web/assets/img/logo-loket-blue.svg"
+        alt="Logo"
+        className="mb-8"
+      />
+      <div className="border p-5 w-full max-w-3xl shadow-lg rounded-md">
+        <p className="text-xl font-semibold text-center mt-3 mb-9">Add Event</p>
+        <form className="grid gap-5 text-left" onSubmit={handleSubmit(onSubmit)}>
+          <div>
             <p>Event Image</p>
             <input
               type="file"
               accept="image/*"
               onChange={(e) => setSelectedFile(e.target.files?.[0] || null)}
-              // {...register("image")}
               className="border w-full bg-[#F9FAFB] rounded-lg"
             />
+          </div>
+
+          <div>
+            <p>Event Name</p>
+            <input
+              type="text"
+              {...register('event_name')}
+              className="border w-full bg-[#F9FAFB] rounded-lg"
+            />
+            <ErrorMessage errors={errors} name="event_name" />
+          </div>
+
+          <div>
+            <p>Event Description</p>
+            <input
+              type="text"
+              {...register('event_desc')}
+              className="border w-full bg-[#F9FAFB] rounded-lg"
+            />
+            <ErrorMessage errors={errors} name="event_desc" />
+          </div>
+
+          <div>
+            <p>Category</p>
+            <select
+              {...register('category')}
+              className="bg-gray-50 border w-full rounded-lg"
+            >
+              <option value="music">Music</option>
+              <option value="theatre">Theatre</option>
+              <option value="festival">Festival</option>
+              <option value="hobbies">Hobbies</option>
+            </select>
+            <ErrorMessage errors={errors} name="category" />
+          </div>
+
+          <div>
+            <p>Location</p>
+            <input
+              type="text"
+              {...register('location')}
+              className="border w-full bg-[#F9FAFB] rounded-lg"
+            />
+            <ErrorMessage errors={errors} name="location" />
+          </div>
+
+          {/* Dates and Times */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
             <div>
-              <p>Event Name</p>
+              <p>Start Date</p>
               <input
-                type="text"
-                {...register('event_name')}
+                type="date"
+                {...register('start_date')}
                 className="border w-full bg-[#F9FAFB] rounded-lg"
               />
-              <ErrorMessage errors={errors} name="event_name" />
+              <ErrorMessage errors={errors} name="start_date" />
             </div>
 
-            {/* Event Description */}
             <div>
-              <p>Event Description</p>
+              <p>End Date</p>
               <input
-                type="text"
-                {...register('event_desc')}
+                type="date"
+                {...register('end_date')}
                 className="border w-full bg-[#F9FAFB] rounded-lg"
               />
-              <ErrorMessage errors={errors} name="event_desc" />
+              <ErrorMessage errors={errors} name="end_date" />
             </div>
+          </div>
 
-            {/* Category */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
             <div>
-              <p>Category</p>
-              <select
-                {...register('category')}
-                className="bg-gray-50 border w-full rounded-lg"
-              >
-                <option value="music">Music</option>
-                <option value="theatre">Theatre</option>
-                <option value="festival">Festival</option>
-                <option value="hobbies">Hobbies</option>
-              </select>
-              <ErrorMessage errors={errors} name="category" />
-            </div>
-
-            {/* Location */}
-            <div>
-              <p>Location</p>
+              <p>Start Time</p>
               <input
-                type="text"
-                {...register('location')}
+                type="time"
+                {...register('start_time')}
                 className="border w-full bg-[#F9FAFB] rounded-lg"
               />
-              <ErrorMessage errors={errors} name="location" />
+              <ErrorMessage errors={errors} name="start_time" />
             </div>
 
-            {/* Dates and Times */}
-            <div className="flex gap-3">
-              <div className="w-full">
-                <p>Start Date</p>
-                <input
-                  type="date"
-                  {...register('start_date')}
-                  className="border w-full bg-[#F9FAFB] rounded-lg"
-                />
-                <ErrorMessage errors={errors} name="start_date" />
-              </div>
-
-              <div className="w-full">
-                <p>End Date</p>
-                <input
-                  type="date"
-                  {...register('end_date')}
-                  className="border w-full bg-[#F9FAFB] rounded-lg"
-                />
-                <ErrorMessage errors={errors} name="end_date" />
-              </div>
+            <div>
+              <p>End Time</p>
+              <input
+                type="time"
+                {...register('end_time')}
+                className="border w-full bg-[#F9FAFB] rounded-lg"
+              />
+              <ErrorMessage errors={errors} name="end_time" />
             </div>
+          </div>
 
-            <div className="flex gap-3">
-              <div className="w-full">
-                <p>Start Time</p>
+          {/* Dynamic Ticket Fields */}
+          {fields.map((field, index) => (
+            <div key={field.id} className="grid gap-3 border-b pb-5 mb-5">
+              <div>
+                <p>Ticket Type</p>
                 <input
-                  type="time"
-                  {...register('start_time')}
+                  type="text"
+                  {...register(`tickets.${index}.ticket_type`)}
                   className="border w-full bg-[#F9FAFB] rounded-lg"
                 />
-                <ErrorMessage errors={errors} name="start_time" />
+                <ErrorMessage
+                  errors={errors}
+                  name={`tickets.${index}.ticket_type`}
+                />
               </div>
 
-              <div className="w-full">
-                <p>End Time</p>
+              <div>
+                <p>Price</p>
                 <input
-                  type="time"
-                  {...register('end_time')}
+                  type="number"
+                  step="0.01"
+                  {...register(`tickets.${index}.price`, {
+                    valueAsNumber: true,
+                  })}
                   className="border w-full bg-[#F9FAFB] rounded-lg"
                 />
-                <ErrorMessage errors={errors} name="end_time" />
+                <ErrorMessage
+                  errors={errors}
+                  name={`tickets.${index}.price`}
+                />
               </div>
-            </div>
 
-            {/* Dynamic Ticket Fields */}
-            {fields.map((field, index) => (
-              <div key={field.id} style={{ marginBottom: '10px' }}>
-                <div>
-                  <p>Ticket Type</p>
-                  <input
-                    type="text"
-                    {...register(`tickets.${index}.ticket_type`)}
-                    className="border w-full bg-[#F9FAFB] rounded-lg"
-                  />
-                  <ErrorMessage
-                    errors={errors}
-                    name={`tickets.${index}.ticket_type`}
-                  />
-                </div>
+              <div>
+                <p>Stock</p>
+                <input
+                  type="number"
+                  {...register(`tickets.${index}.stock`, {
+                    valueAsNumber: true,
+                  })}
+                  className="border w-full bg-[#F9FAFB] rounded-lg"
+                />
+                <ErrorMessage
+                  errors={errors}
+                  name={`tickets.${index}.stock`}
+                />
+              </div>
 
-                <div>
-                  <p>Price</p>
-                  <input
-                    type="number"
-                    step="0.01"
-                    {...register(`tickets.${index}.price`, {
-                      valueAsNumber: true,
-                    })}
-                    className="border w-full bg-[#F9FAFB] rounded-lg"
-                  />
-                  <ErrorMessage
-                    errors={errors}
-                    name={`tickets.${index}.price`}
-                  />
-                </div>
+              <div>
+                <p>Discount Price</p>
+                <input
+                  type="number"
+                  step="0.01"
+                  {...register(`tickets.${index}.discount_price`, {
+                    valueAsNumber: true,
+                  })}
+                  className="border w-full bg-[#F9FAFB] rounded-lg"
+                />
+                <ErrorMessage
+                  errors={errors}
+                  name={`tickets.${index}.discount_price`}
+                />
+              </div>
 
-                <div>
-                  <p>Stock</p>
-                  <input
-                    type="number"
-                    {...register(`tickets.${index}.stock`, {
-                      valueAsNumber: true,
-                    })}
-                    className="border w-full bg-[#F9FAFB] rounded-lg"
-                  />
-                  <ErrorMessage
-                    errors={errors}
-                    name={`tickets.${index}.stock`}
-                  />
-                </div>
-
-                <div>
-                  <p>Discount Price</p>
-                  <input
-                    type="number"
-                    step="0.01"
-                    {...register(`tickets.${index}.discount_price`, {
-                      valueAsNumber: true,
-                    })}
-                    className="border w-full bg-[#F9FAFB] rounded-lg"
-                  />
-                  <ErrorMessage
-                    errors={errors}
-                    name={`tickets.${index}.discount_price`}
-                  />
-                </div>
-
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                 <div>
                   <p>Discount Start Date</p>
                   <input
@@ -284,26 +282,26 @@ export default function Page() {
                   />
                 </div>
               </div>
-            ))}
+            </div>
+          ))}
 
-            {/* Add Ticket Button */}
-            <button
-              type="button"
-              className="bg-gray-500 text-white p-2 my-3 rounded-lg"
-              onClick={handleAddTicket}
-            >
-              Add Another Ticket
-            </button>
+          {/* Add Ticket Button */}
+          <button
+            type="button"
+            className="bg-gray-500 text-white p-2 rounded-lg"
+            onClick={handleAddTicket}
+          >
+            Add Another Ticket
+          </button>
 
-            {/* Submit Button */}
-            <button
-              type="submit"
-              className="bg-[#0049cc] text-white p-2 my-3 rounded-lg"
-            >
-              Register
-            </button>
-          </form>
-        </div>
+          {/* Submit Button */}
+          <button
+            type="submit"
+            className="bg-[#0049cc] text-white p-2 rounded-lg mt-5"
+          >
+            Add Event
+          </button>
+        </form>
       </div>
     </div>
   );

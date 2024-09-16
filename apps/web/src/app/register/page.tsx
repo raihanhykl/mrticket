@@ -50,12 +50,12 @@ export default function page({}: Props) {
 
   return (
     <div>
-      <div className="flex flex-col gap-7 items-center content-center py-[50px] text-sm ">
+      <div className="flex flex-col gap-7 items-center content-center py-[50px] text-sm px-5 sm:px-0">
         <img
           src="https://assets.loket.com/web/assets/img/logo-loket-blue.svg"
           alt=""
         />
-        <div className="border-[1px] p-5 content-center items-center text-left w-[400px] shadow-lg rounded-md">
+        <div className="border-[1px] p-5 content-center items-center text-left max-w-[400px] shadow-lg rounded-md">
           <p className="text-xl font-semibold text-center mt-3 mb-9">
             Registration
           </p>

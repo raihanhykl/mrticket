@@ -80,7 +80,7 @@ export default function Page({ params }: Props) {
 
                 <button
                     type="submit"
-                    className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 transition"
+                    className="bg-[#003899] text-white px-4 py-2 rounded"
                 >
                     Submit
                 </button>

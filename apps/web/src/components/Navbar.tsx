@@ -51,8 +51,7 @@ export default async function Navbar({}: Props) {
                   </div>
                 </Link>
               </div>
-              
-            ): null}
+            ) : null}
 
             <div className="content-center">
               <Link href={'/events'}>
@@ -68,7 +67,7 @@ export default async function Navbar({}: Props) {
             </div>
 
             <div className="content-center">
-              <Link href={'/carts'}>
+              <Link href={session ? `/carts` : `/login`}>
                 <div className="content-center flex items-center gap-1">
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
@@ -87,7 +86,7 @@ export default async function Navbar({}: Props) {
             </div>
 
             <div className="content-center">
-              <Link href={'/my-tickets'}>
+              <Link href={session ? `/my-tickets` : `/login`}>
                 <div className="content-center flex items-center gap-1">
                   <svg
                     xmlns="http://www.w3.org/2000/svg"

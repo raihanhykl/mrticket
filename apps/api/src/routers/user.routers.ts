@@ -36,6 +36,8 @@ export class UserRouter {
       this.userController.createReview,
     );
 
+    this.router.get('/review', validateToken, this.userController.getReview);
+
     this.router.get(
       '/user-voucher',
       validateToken,

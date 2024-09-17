@@ -20,7 +20,7 @@ export class AdminRouter {
     this.router.get('/event', this.adminController.getEvent);
     this.router.patch('/delete-event', this.adminController.deleteEvent);
     this.router.post(
-      '/update-event',
+      '/update-event/:event_id',
       uploader('EVENT', 'events').single('image'),
       validateToken,
       this.adminController.updateEvent,

@@ -4,6 +4,8 @@ import { addEventAction } from '@/action/event.action';
 import { eventSchema } from '@/schemas/event.schemas';
 import { ErrorMessage } from '@hookform/error-message';
 import { zodResolver } from '@hookform/resolvers/zod';
+import { useRouter } from 'next/navigation';
+// import { useRouter } from 'next/router';
 import React, { useState } from 'react';
 import { useForm, useFieldArray } from 'react-hook-form';
 import { z } from 'zod';
@@ -41,12 +43,13 @@ export default function Page() {
 
   const onSubmit = async (values: z.infer<typeof eventSchema>) => {
     try {
+      const router = useRouter();
       const ticket = values.tickets;
       delete values.tickets;
       // const dor = values.location;
 
       if (!selectedFile) {
-        alert("Please upload an image file");
+        alert('Please upload an image file');
         return;
       }
 
@@ -66,7 +69,14 @@ export default function Page() {
       console.log(formData, 'kiw');
 
       // if(selectedFile && ticket) await addEventAction(data, ticket);
-      if (ticket) await addEventAction(formData, ticket);
+      if (ticket) {
+        const res = await addEventAction(formData, ticket);
+        // if (res?.success) {
+        router.push('/events');
+        // } else {
+        // console.log('Failed to add to cart');
+        // }
+      }
     } catch (err) {
       console.error(err);
     }
@@ -92,7 +102,10 @@ export default function Page() {
       />
       <div className="border p-5 w-full max-w-3xl shadow-lg rounded-md">
         <p className="text-xl font-semibold text-center mt-3 mb-9">Add Event</p>
-        <form className="grid gap-5 text-left" onSubmit={handleSubmit(onSubmit)}>
+        <form
+          className="grid gap-5 text-left"
+          onSubmit={handleSubmit(onSubmit)}
+        >
           <div>
             <p>Event Image</p>
             <input
@@ -218,10 +231,7 @@ export default function Page() {
                   })}
                   className="border w-full bg-[#F9FAFB] rounded-lg"
                 />
-                <ErrorMessage
-                  errors={errors}
-                  name={`tickets.${index}.price`}
-                />
+                <ErrorMessage errors={errors} name={`tickets.${index}.price`} />
               </div>
 
               <div>
@@ -233,10 +243,7 @@ export default function Page() {
                   })}
                   className="border w-full bg-[#F9FAFB] rounded-lg"
                 />
-                <ErrorMessage
-                  errors={errors}
-                  name={`tickets.${index}.stock`}
-                />
+                <ErrorMessage errors={errors} name={`tickets.${index}.stock`} />
               </div>
 
               <div>

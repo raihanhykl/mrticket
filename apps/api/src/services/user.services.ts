@@ -2,6 +2,7 @@ import { ErrorHandler } from '@/helpers/response';
 import prisma from '@/prisma';
 import { Prisma } from '@prisma/client';
 import { Request } from 'express';
+import { number } from 'zod';
 
 export class UserService {
   static async getUser(req: Request) {
@@ -44,21 +45,52 @@ export class UserService {
     return await prisma.$transaction(async (prisma) => {
       try {
         const { total_price, voucher_id, values, usePoint } = req.body;
+        console.log(
+          'ini total price: ',
+          total_price,
+          'ini voucher id: ',
+          voucher_id,
+          'ini values: ',
+          values,
+          'ini use point: ',
+          usePoint,
+        );
         const data: Prisma.TransactionCreateInput = {
           invoice: 'INV-' + Date.now() + '/' + Math.floor(Math.random() * 100),
           transaction_date: new Date(),
           total_price,
-          Voucher: {
-            connect: {
-              id: voucher_id,
-            },
-          },
           User: {
             connect: {
               id: Number(req.user.id),
             },
           },
         };
+        console.log(voucher_id, 'ini voucher id');
+
+        if (voucher_id) {
+          console.log('ini voucher id: ', voucher_id);
+          const checkVoucher = await prisma.userVoucher.findUnique({
+            where: {
+              id: Number(voucher_id),
+            },
+          });
+
+          if (!checkVoucher) throw new ErrorHandler('Voucher not valid', 400);
+          data.UserVoucher = {
+            connect: {
+              id: Number(voucher_id),
+            },
+          };
+
+          await prisma.userVoucher.update({
+            where: {
+              id: Number(voucher_id),
+            },
+            data: {
+              is_used: true,
+            },
+          });
+        }
         const trans = await prisma.transaction.create({ data });
 
         if (usePoint) {
@@ -239,6 +271,30 @@ export class UserService {
       });
     } catch (error) {
       throw new Error('Failed to get user voucher');
+    }
+  }
+
+  static async getReview(req: Request) {
+    try {
+      console.log(
+        'ini id user: ',
+        req.user.id,
+        'ini id event: ',
+        req.params.event_id,
+      );
+      return await prisma.review.findFirst({
+        where: {
+          userId: Number(req.user.id),
+          // Event: {
+          //   id: Number(req.params.event_id),
+          // },
+        },
+        include: {
+          Event: true,
+        },
+      });
+    } catch (error) {
+      throw new Error('Failed to get all review');
     }
   }
 }

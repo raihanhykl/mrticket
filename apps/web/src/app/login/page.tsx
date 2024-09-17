@@ -40,7 +40,8 @@ export default function page({}: Props) {
 
         setError('password', {
           type: 'manual',
-          message: 'check your email and password',
+          message:
+            'Cek Email dan Password. Pastikan sudah melakukan verifikasi',
         });
       });
   };

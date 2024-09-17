@@ -256,7 +256,7 @@ export class AdminService {
 
       return await prisma.event.update({
         where: {
-          id: 1,
+          id: Number(req.params.event_id),
         },
         data,
       });

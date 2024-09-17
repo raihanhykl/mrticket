@@ -6,6 +6,7 @@ import { eventSchema, updateEventSchema } from '@/schemas/event.schemas';
 import { ErrorMessage } from '@hookform/error-message';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useSession } from 'next-auth/react';
+import { useRouter } from 'next/navigation';
 import React, { useEffect, useState } from 'react';
 import { useForm, useFieldArray } from 'react-hook-form';
 import { z } from 'zod';
@@ -28,6 +29,7 @@ export default function Page({ params }: Props) {
     start_time: '00:00',
     end_time: '00:00',
   });
+  const router = useRouter();
   const form = useForm<z.infer<typeof updateEventSchema>>({
     resolver: zodResolver(eventSchema),
     defaultValues: {},
@@ -81,7 +83,8 @@ export default function Page({ params }: Props) {
       }
 
       const accessToken = String(session.data?.user.access_token);
-      await updateEventAction(formData, accessToken);
+      await updateEventAction(params.event_id, formData, accessToken);
+      router.push('/dashboard');
 
       // if (ticket) await addEventAction(formData, ticket);
     } catch (err) {
@@ -98,8 +101,13 @@ export default function Page({ params }: Props) {
           className="mb-8"
         />
         <div className="border p-5 w-full max-w-3xl shadow-lg rounded-md">
-          <p className="text-xl font-semibold text-center mt-3 mb-9">Update Event</p>
-          <form className="grid gap-5 text-left" onSubmit={handleSubmit(onSubmit)}>
+          <p className="text-xl font-semibold text-center mt-3 mb-9">
+            Update Event
+          </p>
+          <form
+            className="grid gap-5 text-left"
+            onSubmit={handleSubmit(onSubmit)}
+          >
             {/* Event Image */}
             <div>
               <p>Event Image</p>
@@ -110,7 +118,7 @@ export default function Page({ params }: Props) {
                 className="border w-full bg-[#F9FAFB] rounded-lg"
               />
             </div>
-  
+
             {/* Event Name */}
             <div>
               <p>Event Name</p>
@@ -121,7 +129,7 @@ export default function Page({ params }: Props) {
               />
               <ErrorMessage errors={errors} name="event_name" />
             </div>
-  
+
             {/* Event Description */}
             <div>
               <p>Event Description</p>
@@ -132,7 +140,7 @@ export default function Page({ params }: Props) {
               />
               <ErrorMessage errors={errors} name="event_desc" />
             </div>
-  
+
             {/* Category */}
             <div>
               <p>Category</p>
@@ -147,7 +155,7 @@ export default function Page({ params }: Props) {
               </select>
               <ErrorMessage errors={errors} name="category" />
             </div>
-  
+
             {/* Location */}
             <div>
               <p>Location</p>
@@ -158,7 +166,7 @@ export default function Page({ params }: Props) {
               />
               <ErrorMessage errors={errors} name="location" />
             </div>
-  
+
             {/* Dates and Times */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
               <div>
@@ -170,7 +178,7 @@ export default function Page({ params }: Props) {
                 />
                 <ErrorMessage errors={errors} name="start_date" />
               </div>
-  
+
               <div>
                 <p>End Date</p>
                 <input
@@ -181,7 +189,7 @@ export default function Page({ params }: Props) {
                 <ErrorMessage errors={errors} name="end_date" />
               </div>
             </div>
-  
+
             <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
               <div>
                 <p>Start Time</p>
@@ -192,7 +200,7 @@ export default function Page({ params }: Props) {
                 />
                 <ErrorMessage errors={errors} name="start_time" />
               </div>
-  
+
               <div>
                 <p>End Time</p>
                 <input
@@ -203,7 +211,7 @@ export default function Page({ params }: Props) {
                 <ErrorMessage errors={errors} name="end_time" />
               </div>
             </div>
-  
+
             {/* Submit Button */}
             <button
               type="submit"
@@ -216,5 +224,4 @@ export default function Page({ params }: Props) {
       </div>
     </div>
   );
-  
 }

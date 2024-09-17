@@ -55,6 +55,15 @@ export class UserController {
     }
   }
 
+  async getReview(req: Request, res: Response, next: NextFunction) {
+    try {
+      const data = await UserService.getReview(req);
+      return res.send(responseHandle('Success Get Review', data));
+    } catch (error) {
+      next(error);
+    }
+  }
+
   async getUserVoucher(req: Request, res: Response, next: NextFunction) {
     try {
       const data = await UserService.getUserVoucher(req);

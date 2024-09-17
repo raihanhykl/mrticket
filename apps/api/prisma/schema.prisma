@@ -115,7 +115,7 @@ model Voucher {
   start_date   DateTime?
   end_date     DateTime?
   user_voucher UserVoucher[]
-  transaction  Transaction[]
+  // transaction  Transaction[]
 
   User   User? @relation(fields: [userId], references: [id])
   userId Int?
@@ -128,10 +128,11 @@ model UserVoucher {
   is_used    Boolean
   valid_date DateTime
 
-  Voucher   Voucher? @relation(fields: [voucherId], references: [id])
-  voucherId Int?
-  User      User?    @relation(fields: [userId], references: [id])
-  userId    Int?
+  transaction Transaction[]
+  Voucher     Voucher?      @relation(fields: [voucherId], references: [id])
+  voucherId   Int?
+  User        User?         @relation(fields: [userId], references: [id])
+  userId      Int?
 
   @@map("user_vouchers")
 }
@@ -144,10 +145,13 @@ model Transaction {
   transaction_detail TransactionDetail[]
   poin_used          Int                 @default(0)
 
-  Voucher   Voucher? @relation(fields: [voucherId], references: [id])
-  voucherId Int?
-  User      User?    @relation(fields: [userId], references: [id])
-  userId    Int?
+  // Voucher   Voucher? @relation(fields: [voucherId], references: [id])
+  // voucherId Int?
+
+  User          User?        @relation(fields: [userId], references: [id])
+  userId        Int?
+  UserVoucher   UserVoucher? @relation(fields: [userVoucherId], references: [id])
+  userVoucherId Int?
 }
 
 model TransactionDetail {

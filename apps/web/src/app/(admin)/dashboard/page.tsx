@@ -113,7 +113,10 @@ export default function page({}: Props) {
                 <div className="border-[1px] px-5 py-3 rounded-2xl w-full">
                   <div className="flex justify-between">
                     <div className="block md:flex gap-3">
-                      <p>{event.event_name}</p>
+                      <Link href={`/dashboard-event/${event.id}`}>
+                        <p>{event.event_name}</p>
+                      </Link>
+
                       {event.is_active ? (
                         <p className="text-green-500">Active</p>
                       ) : (

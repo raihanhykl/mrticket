@@ -15,8 +15,21 @@ export async function middleware(request: NextRequest) {
   }
 
   if (
+    !user &&
+    (pathname === '/my-tickets' ||
+      pathname === '/carts' ||
+      pathname === '/profile' ||
+      pathname === '/review')
+  ) {
+    return NextResponse.redirect(new URL('/login', request.url));
+  }
+
+  if (
     (!user || user?.roleId === 1) &&
-    (pathname === '/createEvent' || pathname.startsWith('/update-event'))
+    (pathname === '/createEvent' ||
+      pathname.startsWith('/update-event') ||
+      pathname.startsWith('/dashboard') ||
+      pathname.startsWith('/dashboard-event'))
   ) {
     return NextResponse.redirect(new URL('/', request.url));
   }
@@ -25,5 +38,16 @@ export async function middleware(request: NextRequest) {
 
 // See "Matching Paths" below to learn more
 export const config = {
-  matcher: ['/login', '/register', '/createEvent', '/update-event/:path*'],
+  matcher: [
+    '/login',
+    '/register',
+    '/createEvent',
+    '/update-event/:path*',
+    '/dashboard',
+    '/dashboard-event/:path*',
+    '/my-tickets',
+    '/carts',
+    '/profile',
+    '/review',
+  ],
 };

@@ -127,8 +127,8 @@ export default function page({}: Props) {
       );
     }, 0);
 
-    if (usePoin) res -= poin;
     if (voucherAmount) res -= (voucherAmount / 100) * res;
+    if (usePoin) res -= poin;
     return res;
   };
 
@@ -140,7 +140,7 @@ export default function page({}: Props) {
     try {
       e.preventDefault();
       const total_price = getTotalPrice();
-      const voucher_id = 1;
+      const voucher_id = voucher;
 
       const access_token = String(session?.data?.user?.access_token);
 
@@ -200,7 +200,7 @@ export default function page({}: Props) {
                   <p className="text-sm">{voucher.Voucher.voucher_desc}</p>
                   <Switch
                     onCheckedChange={(e: boolean) => {
-                      setVoucher(voucher.Voucher.id);
+                      setVoucher(voucher.id);
                       setVoucherAmount(e ? voucher.Voucher.amount : 0);
                       setVoucherType(voucher.Voucher.voucher_type);
                     }}
@@ -210,13 +210,12 @@ export default function page({}: Props) {
             ))}
           </div>
           <button
-          type="submit"
-          className="my-5 btn btn-primary p-3 rounded-2xl border-[1px] w-full md:w-auto px-5"
-        >
-          Checkout
-        </button>
+            type="submit"
+            className="my-5 btn btn-primary p-3 rounded-2xl border-[1px] w-full md:w-auto px-5"
+          >
+            Checkout
+          </button>
         </div>
-        
       </form>
     </>
   );

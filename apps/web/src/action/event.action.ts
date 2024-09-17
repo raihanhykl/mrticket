@@ -42,12 +42,13 @@ export const addEventAction = async (
 };
 
 export const updateEventAction = async (
+  event_id: number,
   formData: FormData,
   sessionToken: String,
 ) => {
   try {
     console.log(formData, sessionToken);
-    await api.post('/admin/update-event', formData, {
+    await api.post(`/admin/update-event/${event_id}`, formData, {
       headers: {
         Authorization: 'Bearer ' + sessionToken,
       },

@@ -96,8 +96,13 @@ export default function page({}: Props) {
   return (
     <div className="max-w-screen-xl p-5">
       <div className="flex flex-col gap-3">
-        <div className="text-left p-5 border-2 rounded-xl shadow-md">
+        <div className="flex text-left p-5 border-2 rounded-xl shadow-md items-center justify-between">
           <p className="font-bold text-xl md:text-2xl">Dashboard</p>
+          <Link href={'/createEvent'}>
+            <div className="p-1 px-3 border-2 rounded-md bg-[#003899] text-white font-medium">
+              <p>Create Event</p>
+            </div>
+          </Link>
         </div>
         <div className="text-left p-5 border-2 rounded-xl shadow-md">
           <p className="font-semibold">Your Event</p>
@@ -116,7 +121,7 @@ export default function page({}: Props) {
                       )}
                     </div>
                     {event.is_active ? (
-                      <div className="flex gap-5 text-sm">
+                      <div className="flex gap-5 text-sm items-center">
                         <Link href={`update-event/${event.id}`}>
                           <p className="text-[#003899]">Edit</p>
                         </Link>

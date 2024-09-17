@@ -36,7 +36,7 @@ export default async function Navbar({}: Props) {
 
           {/* <div className="hidden md:flex content-center">search</div> */}
 
-          <div className="hidden md:flex gap-5">
+          <div className="dekstop hidden md:flex gap-5">
             <div className="content-center">
               <Link href={'/createEvent'}>
                 <div className="content-center flex items-center gap-1">
@@ -121,6 +121,58 @@ export default async function Navbar({}: Props) {
               ) : (
                 <Link href={'/login'}>
                   <div className="content-center border-[1px] rounded-md p-2">
+                    <p>Masuk</p>
+                  </div>
+                </Link>
+              )}
+            </div>
+          </div>
+
+          <div className="mobile sm:hidden">
+          <button className="text-white" id="mobile-menu-button">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 24 24"
+                strokeWidth={1.5}
+                stroke="currentColor"
+                className="w-6 h-6"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  d="M3.75 5.25h16.5m-16.5 6h16.5m-16.5 6h16.5"
+                />
+              </svg>
+            </button>
+            <div
+              className="hidden flex-col items-start gap-3 bg-[#152955] text-white p-4 mt-2 rounded-lg absolute"
+              id="mobile-menu"
+            >
+              <Link href={'/createEvent'}>Buat Event</Link>
+              <Link href={'/events'}>Jelajah</Link>
+              <Link href={'/carts'}>Keranjang</Link>
+              <Link href={'/my-tickets'}>Tiket Saya</Link>
+
+              {session ? (
+                <Link href={'/profile'}>
+                  <div className="border-[1px] rounded-md p-2">
+                    <p>{session.user.first_name}</p>
+                  </div>
+                </Link>
+              ) : (
+                <Link href={'/register'}>
+                  <div className="border-[1px] rounded-md p-2">
+                    <p>Daftar</p>
+                  </div>
+                </Link>
+              )}
+
+              {session ? (
+                <NavbarButton />
+              ) : (
+                <Link href={'/login'}>
+                  <div className="border-[1px] rounded-md p-2">
                     <p>Masuk</p>
                   </div>
                 </Link>

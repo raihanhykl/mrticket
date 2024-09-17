@@ -1,6 +1,7 @@
-import { Router } from 'express';
+import { Request, Response, Router } from 'express';
 import { UserController } from '@/controllers/user.controller';
 import { validateToken } from '@/middlewares/validateToken';
+import { sendVerificationEmail } from '@/lib/nodemailer';
 
 export class UserRouter {
   private router = Router();
@@ -40,6 +41,16 @@ export class UserRouter {
       validateToken,
       this.userController.getUserVoucher,
     );
+
+    this.router.post('/test', async (req: Request, res: Response) => {
+      const { email } = req.body;
+      await sendVerificationEmail(email, {
+        email,
+        verification_url: 'testing',
+      });
+
+      res.send('sent');
+    });
   }
   public getRouter() {
     return this.router;

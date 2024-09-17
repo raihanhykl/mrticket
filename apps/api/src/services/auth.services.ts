@@ -101,13 +101,14 @@ export class AuthSerivce {
               ),
             },
           });
-
-          const token = generateTokeEmailVerification({ email });
-          return sendVerificationEmail(email, {
-            email,
-            verification_url: verification_url + token,
-          });
         }
+        const token = generateTokeEmailVerification({ email });
+        console.log('masukk', email, token, verification_url);
+
+        return sendVerificationEmail(email, {
+          email,
+          verification_url: verification_url + token,
+        });
       } catch (error) {
         throw new ErrorHandler((error as Error).message, 400);
       }

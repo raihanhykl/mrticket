@@ -10,7 +10,12 @@ export async function middleware(request: NextRequest) {
   const user = session?.user;
   const { pathname } = request.nextUrl;
 
-  if (user?.id && (pathname === '/login' || pathname === '/register')) {
+  if (
+    user?.id &&
+    (pathname === '/login' ||
+      pathname === '/register' ||
+      pathname.startsWith('/verification'))
+  ) {
     return NextResponse.redirect(new URL('/', request.url));
   }
 
@@ -49,5 +54,6 @@ export const config = {
     '/carts',
     '/profile',
     '/review',
+    '/verification/:path*',
   ],
 };

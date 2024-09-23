@@ -16,6 +16,17 @@ export class UserService {
       throw new Error('Failed get user!');
     }
   }
+  static async getUserVerif(req: Request) {
+    try {
+      return await prisma.user.findUnique({
+        where: {
+          email: req.user.email,
+        },
+      });
+    } catch (error) {
+      throw new Error('Failed get user!');
+    }
+  }
   static async addToCart(req: Request) {
     try {
       console.log(req.body, 'ini req body api service');
@@ -41,7 +52,7 @@ export class UserService {
     }
   }
 
-  static async checkOut(req: Request) {
+  static async checkOutBackup(req: Request) {
     return await prisma.$transaction(async (prisma) => {
       try {
         const { total_price, voucher_id, values, usePoint } = req.body;
@@ -147,6 +158,159 @@ export class UserService {
       }
     });
   }
+
+  static async checkOut(req: Request) {
+    const { voucher_id, usePoint } = req.body;
+    const { id } = req.user;
+
+    await prisma.$transaction(async (prisma) => {
+      try {
+        console.log('here');
+
+        const data = {
+          invoice: 'INV-' + Date.now() + '/' + Math.floor(Math.random() * 100),
+          transaction_date: new Date(),
+          total_price: 0,
+          User: {
+            connect: {
+              id,
+            },
+          },
+        } as Prisma.TransactionCreateInput;
+        const newTransaction = await prisma.transaction.create({
+          data,
+        });
+
+        const userCarts = await prisma.cart.findMany({
+          include: {
+            Ticket: true,
+          },
+          where: {
+            userId: id,
+          },
+        });
+        let total = 0;
+        for (let i = 0; i < userCarts.length; i++) {
+          let discount = 0;
+          if (
+            userCarts[i].Ticket?.disc_start_date &&
+            userCarts[i].Ticket?.disc_end_date
+          ) {
+            if (
+              userCarts[i].Ticket?.disc_start_date! >= new Date() &&
+              userCarts[i].Ticket?.disc_end_date! <= new Date()
+            ) {
+              discount = Number(userCarts[i].Ticket?.discount_price || 0);
+            }
+          }
+
+          //update stock
+          await prisma.ticket.update({
+            data: {
+              stock: {
+                decrement: userCarts[i].quantity!,
+              },
+            },
+            where: { id: userCarts[i].ticketId! },
+          });
+
+          total +=
+            (userCarts[i].Ticket?.price! - discount) * userCarts[i].quantity;
+
+          const newTransDetail = {
+            quantity: userCarts[i].quantity,
+            price: userCarts[i].Ticket?.price,
+            discount: Number(userCarts[i].Ticket?.discount_price || 0),
+            Transaction: {
+              connect: {
+                id: newTransaction.id,
+              },
+            },
+            Ticket: {
+              connect: {
+                id: userCarts[i].ticketId,
+              },
+            },
+          } as Prisma.TransactionDetailCreateInput;
+          await prisma.transactionDetail.create({
+            data: newTransDetail,
+          });
+        }
+
+        const updatedTransaction = {} as Prisma.TransactionUpdateInput;
+
+        const currentUser = await prisma.user.findUnique({
+          where: {
+            id,
+          },
+        });
+
+        if (!currentUser) throw new ErrorHandler('User not found', 404);
+
+        if (voucher_id) {
+          const checkVoucher = await prisma.userVoucher.findUnique({
+            include: {
+              Voucher: true,
+            },
+            where: {
+              id: Number(voucher_id),
+              is_used: false,
+            },
+          });
+          if (!checkVoucher) throw new ErrorHandler('Voucher not valid', 400);
+
+          await prisma.userVoucher.update({
+            where: {
+              id: Number(voucher_id),
+            },
+            data: {
+              is_used: true,
+            },
+          });
+
+          updatedTransaction.UserVoucher = {
+            connect: {
+              id: Number(voucher_id),
+            },
+          };
+
+          total = total - (total * checkVoucher.Voucher?.amount!) / 100;
+        }
+
+        if (usePoint) {
+          console.log(usePoint, total, currentUser.poin);
+
+          updatedTransaction.poin_used =
+            total > currentUser.poin ? currentUser.poin : total;
+
+          await prisma.user.update({
+            where: {
+              id,
+            },
+            data: {
+              poin: currentUser.poin - updatedTransaction.poin_used,
+            },
+          });
+        }
+
+        updatedTransaction.total_price =
+          total > currentUser.poin ? total - currentUser.poin : 0;
+        await prisma.transaction.update({
+          where: {
+            id: newTransaction.id,
+          },
+          data: updatedTransaction,
+        });
+
+        await prisma.cart.deleteMany({
+          where: {
+            userId: id,
+          },
+        });
+      } catch (error) {}
+    });
+  }
+
   static async getCart(req: Request) {
     try {
       // const { userId } = req.body;
@@ -184,6 +348,20 @@ export class UserService {
     }
   }
 
+  static async deleteCart(req: Request) {
+    try {
+      const { cartId } = req.body;
+
+      return await prisma.cart.delete({
+        where: {
+          id: cartId,
+        },
+      });
+    } catch (error) {
+      throw new Error('Failed delete cart!');
+    }
+  }
+
   static async getTransaction(req: Request) {
     try {
       return await prisma.transaction.findMany({
@@ -211,17 +389,25 @@ export class UserService {
     try {
       console.log(req.body, 'ini req body api service');
 
-      const { review, rating, eventId } = req.body;
+      const { review, rating, eventId, transactionId } = req.body;
       const check = await prisma.transaction.findFirst({
         where: {
           userId: Number(req.user.id),
           transaction_detail: {
             some: {
               Ticket: {
-                eventId: Number(eventId), // Cari berdasarkan eventId yang sesuai
+                eventId: Number(eventId),
               },
             },
           },
+        },
+      });
+
+      const check2 = await prisma.review.findFirst({
+        where: {
+          userId: Number(req.user.id),
+          eventId: Number(eventId),
+          transactionId: Number(transactionId),
         },
       });
 
@@ -229,27 +415,33 @@ export class UserService {
 
       if (!check) {
         console.log('check nya gaada bg');
-
         throw new Error('Transaction not found, user not permitted');
       }
 
-      const data: Prisma.ReviewCreateInput = {
-        review,
-        rating,
-        Event: {
-          connect: {
-            id: Number(eventId),
+      if (!check2) {
+        const data: Prisma.ReviewCreateInput = {
+          review,
+          rating,
+          Transaction: {
+            connect: {
+              id: Number(transactionId),
+            },
           },
-        },
-        User: {
-          connect: {
-            id: Number(req.user.id),
+          Event: {
+            connect: {
+              id: Number(eventId),
+            },
           },
-        },
-      };
-      const valid = await prisma.event;
+          User: {
+            connect: {
+              id: Number(req.user.id),
+            },
+          },
+        };
+        // const valid = await prisma.event;
 
-      return await prisma.review.create({ data });
+        return await prisma.review.create({ data });
+      }
     } catch (error) {
       throw new Error('Failed to create review');
     }
@@ -276,13 +468,13 @@ export class UserService {
 
   static async getReview(req: Request) {
     try {
-      console.log(
-        'ini id user: ',
-        req.user.id,
-        'ini id event: ',
-        req.params.event_id,
-      );
-      return await prisma.review.findFirst({
+      // console.log(
+      //   'ini id user: ',
+      //   req.user.id,
+      //   'ini id event: ',
+      //   req.params.event_id,
+      // );
+      return await prisma.review.findMany({
         where: {
           userId: Number(req.user.id),
           // Event: {

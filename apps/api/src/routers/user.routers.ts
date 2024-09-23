@@ -2,6 +2,7 @@ import { Request, Response, Router } from 'express';
 import { UserController } from '@/controllers/user.controller';
 import { validateToken } from '@/middlewares/validateToken';
 import { sendVerificationEmail } from '@/lib/nodemailer';
+import { verifyEmail } from '@/middlewares/verify';
 
 export class UserRouter {
   private router = Router();
@@ -18,11 +19,21 @@ export class UserRouter {
       validateToken,
       this.userController.addToCart,
     );
+    this.router.get(
+      '/get-user-verif',
+      verifyEmail,
+      this.userController.getUserVerif,
+    );
     this.router.get('/cart', validateToken, this.userController.getCart);
     this.router.patch(
       '/update-cart',
       validateToken,
       this.userController.updateCart,
+    );
+    this.router.patch(
+      '/delete-cart',
+      validateToken,
+      this.userController.deleteCart,
     );
     this.router.post('/check-out', validateToken, this.userController.checkOut);
     this.router.get(

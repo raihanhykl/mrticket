@@ -98,6 +98,7 @@ export default function page({}: Props) {
                   className="bg-[#0049cc] text-white p-2 my-3 rounded-lg"
                 >
                   {isSubmitting ? 'Logging in...' : 'Login'}
+                  
                 </button>
               </form>
             </div>

@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import React, { useState } from 'react';
 type Props = {
   params: {
+    transaction_id: number;
     event_id: number;
   };
 };
@@ -17,6 +18,7 @@ export default function Page({ params }: Props) {
   const router = useRouter();
 
   const event_id = params.event_id;
+  const transaction_id = params.transaction_id;
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -37,7 +39,13 @@ export default function Page({ params }: Props) {
     console.log('Rating:', rating);
     console.log('Review:', review);
 
-    await addReview(String(access_token), event_id, review, rating);
+    await addReview(
+      String(access_token),
+      event_id,
+      review,
+      rating,
+      transaction_id,
+    );
     router.push('/my-tickets');
 
     // setRating('');

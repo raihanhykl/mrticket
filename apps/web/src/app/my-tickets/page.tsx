@@ -2,13 +2,14 @@
 import { api } from '@/config/axios.config';
 import { useSession } from 'next-auth/react';
 import Link from 'next/link';
+import { useParams } from 'next/navigation';
 import React, { useEffect, useState } from 'react';
 
 type Props = {};
 
 export default function page({}: Props) {
   const [transactions, setTransactions] = useState<any>([]);
-  const [review, setReview] = useState<any>([]);
+  const [review, setReview] = useState<any[]>([]);
 
   const session = useSession();
   useEffect(() => {
@@ -24,14 +25,16 @@ export default function page({}: Props) {
         },
       });
       setTransactions(res.data.data);
-      setReview(resReview.data.data);
+
+      setReview(resReview?.data.data);
     };
 
     if (session.status == 'authenticated') {
       fetchData();
     }
+    console.log(transactions);
+    console.log(review);
   }, [session]);
-  console.log(review);
   return (
     <div className="max-w-screen-xl mx-auto p-5">
       {transactions.map((transaction: any) => (
@@ -73,23 +76,36 @@ export default function page({}: Props) {
                       {detail.Ticket.price.toLocaleString('id-ID')}
                     </p>
                   </div>
+
                   <div className="text-right flex flex-col gap-1 text-sm content-center">
                     <p className="text-gray-600">Quantity: {detail.quantity}</p>
                     <p className="font-semibold">
                       Total Price: Rp. {detail.Ticket.price * detail.quantity}
                     </p>
-                    {review?.Event.id == detail.Ticket.Event.id ? (
+
+                    {review.find(
+                      (item) => item.transactionId === transaction.id,
+                    ) ? (
                       <div
                         className={` inline-block p-2 border rounded-lg bg-gray-500 text-white text-center cursor-not-allowed}`}
                       >
                         <p>Already Reviewed</p>
+                        <p>{detail?.Ticket.Event?.event_name}</p>
                       </div>
                     ) : (
-                      <Link href={'/review/' + detail.Ticket.Event.id}>
+                      <Link
+                        href={
+                          '/review/' +
+                          transaction.id +
+                          '/events/' +
+                          detail.Ticket.Event?.id
+                        }
+                      >
                         <div
                           className={` inline-block p-2 border rounded-lg bg-[#003899] text-white text-center }`}
                         >
                           <p>Rate This Experience</p>
+                          <p>{detail?.Ticket.Event?.id}</p>
                         </div>
                       </Link>
                     )}

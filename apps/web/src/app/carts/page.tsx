@@ -2,7 +2,7 @@
 import { api } from '@/config/axios.config';
 import React, { useEffect, useState } from 'react';
 import { useSession } from 'next-auth/react';
-import { checkOut } from '@/action/user.action';
+import { addToCart, checkOut } from '@/action/user.action';
 import { Switch } from '@/components/ui/switch';
 import { log } from 'console';
 import { redirect } from 'next/navigation';
@@ -15,15 +15,13 @@ type Props = {};
 export default function page({}: Props) {
   const [carts, setCarts] = useState<any>([]);
   const [userVoucher, setUserVoucher] = useState<any>([]);
-  const [selectedCarts, setSelectedCarts] = useState<number[]>([]);
-  const [selectAll, setSelectAll] = useState(false);
   const session = useSession();
   const [isCheckOut, setIsCheckOut] = useState(false);
   const [usePoin, setUsePoin] = useState(false);
   const [poin, setPoin] = useState<number>(0);
   const [voucher, setVoucher] = useState<number>();
   const [voucherAmount, setVoucherAmount] = useState<number>(0);
-  const [voucherType, setVoucherType] = useState<any>();
+  const [finalPoin, setfinalPoin] = useState<number>(0);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -49,36 +47,13 @@ export default function page({}: Props) {
         },
       });
       setPoin(res.data.data.poin);
+      setfinalPoin(res.data.data.poin);
     };
     if (session.status == 'authenticated') {
       fetchData();
       getPoin();
     }
   }, [session, isCheckOut]);
-
-  // Handle checkbox change
-  // const handleCheckboxChange = (cartId: number) => {
-  //   setSelectedCarts((prevSelected) => {
-  //     if (prevSelected.includes(cartId)) {
-  //       return prevSelected.filter((id) => id !== cartId); // Remove if already selected
-  //     } else {
-  //       return [...prevSelected, cartId]; // Add if not selected
-  //     }
-  //   });
-  // };
-
-  // Handle "Select All" checkbox change
-  // const handleSelectAllChange = () => {
-  //   setSelectAll(!selectAll);
-  //   if (!selectAll) {
-  //     const allCartIds = carts.map((cart: any) => cart.id);
-  //     setSelectedCarts(allCartIds);
-  //   } else {
-  //     setSelectedCarts([]);
-  //   }
-  // };
-
-  // Increase quantity
   const handleIncreaseQuantity = (cartId: number) => {
     setCarts((prevCarts: any[]) =>
       prevCarts.map((cart: any) =>
@@ -87,16 +62,16 @@ export default function page({}: Props) {
     );
   };
 
-  // Decrease quantity
-  const handleDecreaseQuantity = (cartId: number) => {
-    setCarts((prevCarts: any[]) =>
-      prevCarts.map((cart: any) =>
-        cart.id === cartId && cart.quantity > 1
-          ? { ...cart, quantity: cart.quantity - 1 }
-          : cart,
-      ),
-    );
-  };
+  // useEffect(() => {
+  //   let price;
+  //   if (usePoin) {
+  //     price = getTotalPrice(usePoin);
+  //     setfinalPoin((prev) => prev - poin);
+  //   } else {
+  //     price = getTotalPrice();
+  //     setfinalPoin((prev) => (prev = poin));
+  //   }
+  // }, [usePoin]);
 
   const handleQuantity = (cartId: number, quantity: number) => {
     setCarts((prevCarts: any[]) =>
@@ -107,9 +82,18 @@ export default function page({}: Props) {
   };
 
   // Delete cart item
-  const handleDeleteCart = (cartId: number) => {
+  const handleDeleteCart = async (cartId: number) => {
     setCarts((prevCarts: any[]) =>
       prevCarts.filter((cart: any) => cart.id !== cartId),
+    );
+    let res = await api.patch(
+      '/users/delete-cart',
+      { cartId: cartId },
+      {
+        headers: {
+          Authorization: 'Bearer ' + session.data?.user?.access_token,
+        },
+      },
     );
   };
 
@@ -128,7 +112,16 @@ export default function page({}: Props) {
     }, 0);
 
     if (voucherAmount) res -= (voucherAmount / 100) * res;
-    if (usePoin) res -= poin;
+    if (usePoin) {
+      // res -= poin;
+      if (poin > res) {
+        // setfinalPoin(poin - res);
+        res = 0;
+      } else {
+        res -= poin;
+      }
+    }
+    // setfinalPoin(poin);
     return res;
   };
 
@@ -139,7 +132,7 @@ export default function page({}: Props) {
   const handleSubmit = async (e: React.FormEvent) => {
     try {
       e.preventDefault();
-      const total_price = getTotalPrice();
+      const total_price = getTotalPrice(usePoin);
       const voucher_id = voucher;
 
       const access_token = String(session?.data?.user?.access_token);
@@ -152,10 +145,7 @@ export default function page({}: Props) {
         cartId: cart.id,
       }));
 
-      console.log(values);
-
-      await checkOut(access_token, total_price, voucher_id, usePoin, values);
-
+      await checkOut(access_token, voucher_id, usePoin);
       setIsCheckOut(!isCheckOut);
     } catch (error) {}
 
@@ -190,24 +180,30 @@ export default function page({}: Props) {
 
           <div className="mt-5">
             <p className="text-left font-semibold mb-2">Available Voucher:</p>
-            {userVoucher.map((voucher: any) => (
-              <div
-                key={voucher.Voucher.id}
-                className="border-[1px] px-5 py-3 flex flex-col md:flex-row justify-between rounded-2xl w-full mb-2"
-              >
-                <p>{voucher.Voucher.voucher_name}</p>
-                <div className="flex items-center justify-between gap-2 md:gap-5">
-                  <p className="text-sm">{voucher.Voucher.voucher_desc}</p>
-                  <Switch
-                    onCheckedChange={(e: boolean) => {
-                      setVoucher(voucher.id);
-                      setVoucherAmount(e ? voucher.Voucher.amount : 0);
-                      setVoucherType(voucher.Voucher.voucher_type);
-                    }}
-                  />
+            {getTotalPrice() > 0 &&
+              userVoucher.map((voucher: any) => (
+                <div
+                  key={voucher.Voucher.id}
+                  className="border-[1px] px-5 py-3 flex flex-col md:flex-row justify-between rounded-2xl w-full mb-2"
+                >
+                  <p>{voucher.Voucher.voucher_name}</p>
+                  <div className="flex items-center justify-between gap-2 md:gap-5">
+                    <p className="text-sm">{voucher.Voucher.voucher_desc}</p>
+                    <Switch
+                      onCheckedChange={(e: boolean) => {
+                        setVoucher(voucher.id);
+                        setVoucherAmount(e ? voucher.Voucher.amount : 0);
+                        console.log(
+                          'ini poin',
+                          poin,
+                          'ini final poin: ',
+                          finalPoin,
+                        );
+                      }}
+                    />
+                  </div>
                 </div>
-              </div>
-            ))}
+              ))}
           </div>
           <button
             type="submit"

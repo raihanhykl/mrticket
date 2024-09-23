@@ -17,7 +17,7 @@ export const addEventAction = async (
   const session = await auth();
   try {
     formData.append('userId', Number(session?.user.id).toString());
-
+    console.log(formData, 'ini form data');
     const res = await api.post('/admin/create-event', formData, {
       // headers: {
       //   'Content-Type': 'multipart/form-data',

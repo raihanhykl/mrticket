@@ -13,11 +13,11 @@ export default function page({}: Props) {
   const [events, setEvents] = useState([]);
   const { debounce } = useDebounce();
   const [currentPage, setCurrentPage] = useState<number>(1);
-  const [totalPages, setTotalPages] = useState<number>(1); 
+  const [totalPages, setTotalPages] = useState<number>(1);
 
   const performSearch = async () => {
     let res;
-    const limit = 8;
+    const limit = 1;
 
     if (categories !== '' || search !== '') {
       res = await api.get(
@@ -28,7 +28,7 @@ export default function page({}: Props) {
     }
 
     setEvents(res.data.data.data);
-    setTotalPages(Math.ceil(Number(res.data.data.total) / limit)); 
+    setTotalPages(Math.ceil(Number(res.data.data.total) / limit));
   };
 
   const debouncedSearch = debounce(performSearch, delay);
@@ -117,8 +117,7 @@ export default function page({}: Props) {
                         </p>
                         <p className="text-sm text-gray-500 my-2">
                           {new Date(event.start_date).getDate()}{' '}
-                          {month[new Date(event.start_date).getMonth()]}{' '}
-                          {' - '}
+                          {month[new Date(event.start_date).getMonth()]} {' - '}
                           {new Date(event.end_date).getDate()}{' '}
                           {month[new Date(event.end_date).getMonth()]}
                         </p>

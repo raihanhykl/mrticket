@@ -26,9 +26,21 @@ export default async function Page({ params }: Props) {
         <p>Your email has been verified</p>
       </div>
     );
-  } catch (error) {
-    if (error instanceof AxiosError) {
-      throw new Error(error.response?.data.message);
-    }
+  } catch (error: unknown) {
+    if (error instanceof AxiosError)
+      return (
+        <div className=" flex flex-col justify-center items-center my-6">
+          <h1 className=" my-5 text-2xl font-semibold">
+            Email Already Verified
+          </h1>
+          <p>
+            Your email already verified,{' '}
+            <a href="/login" className="underline text-blue-700">
+              login
+            </a>{' '}
+            instead.{' '}
+          </p>
+        </div>
+      );
   }
 }

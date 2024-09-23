@@ -39,22 +39,25 @@ export const addToCart = async (
 };
 
 export const checkOut = async (
+  // access_token: string,
+  // total_price: number,
+  // voucher_id: number | undefined,
+  // usePoint: boolean,
+  // values: {
+  //   quantity: number;
+  //   price: number | undefined;
+  //   discount: number | undefined;
+  //   ticket_id: number | undefined;
+  //   cartId: number | undefined;
+  // }[],
   access_token: string,
-  total_price: number,
-  voucher_id: number | undefined,
+  voucher_id: Number | undefined,
   usePoint: boolean,
-  values: {
-    quantity: number;
-    price: number | undefined;
-    discount: number | undefined;
-    ticket_id: number | undefined;
-    cartId: number | undefined;
-  }[],
 ) => {
   try {
     await api.post(
       '/users/check-out',
-      { total_price, voucher_id, values, usePoint },
+      { voucher_id, usePoint },
       {
         headers: {
           Authorization: 'Bearer ' + access_token,
@@ -74,6 +77,7 @@ export const addReview = async (
   eventId: number,
   review: string,
   rating: number,
+  transactionId: number,
 ) => {
   try {
     console.log('access_token', access_token);
@@ -87,6 +91,7 @@ export const addReview = async (
         eventId,
         review,
         rating,
+        transactionId,
       },
       {
         headers: {

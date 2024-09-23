@@ -252,6 +252,9 @@ export class AdminService {
       if (req?.file) {
         const image = req.file;
         data.image = image.filename;
+        const imageName = image.filename;
+
+        console.log(imageName, 'ini image update');
       }
 
       return await prisma.event.update({

@@ -44,7 +44,11 @@ export default function Cart({
 
   useEffect(() => {
     debounceQty();
-  }, [qty]);
+  }, [qty > 1]);
+
+  useEffect(() => {
+    console.log(cart);
+  });
   return (
     <div className="flex flex-col md:flex-row gap-5" key={cart.id}>
       <div className="border-[1px] px-5 py-3 flex flex-col md:flex-row justify-between rounded-2xl w-full">
@@ -55,8 +59,12 @@ export default function Cart({
             alt={cart.Ticket.Event.event_name}
           />
           <div className="flex flex-col content-center justify-center text-left">
-            <p className="font-semibold text-lg">{cart.Ticket.Event.event_name}</p>
-            <p className="text-sm text-gray-500">Ticket: {cart.Ticket.ticket_type}</p>
+            <p className="font-semibold text-lg">
+              {cart.Ticket.Event.event_name}
+            </p>
+            <p className="text-sm text-gray-500">
+              Ticket: {cart.Ticket.ticket_type}
+            </p>
             <p className="text-sm text-gray-500">
               Ticket Price: Rp. {cart.Ticket.price.toLocaleString('id-ID')}
             </p>
@@ -66,7 +74,9 @@ export default function Cart({
           <div className="flex items-center justify-end mb-2">
             <button
               type="button"
-              onClick={() => setQty(qty - 1)}
+              onClick={() => {
+                qty > 1 ? setQty(qty - 1) : null;
+              }}
               className="px-3 py-1 bg-gray-300 rounded-l-lg border-[1px] focus:outline-none"
             >
               -
@@ -75,11 +85,15 @@ export default function Cart({
               className="px-4 border-none w-16 text-center outline-none"
               type="number"
               value={qty}
+              min="1"
+              max={cart.Ticket.stock}
               onChange={(e) => setQty(parseInt(e.target.value))}
             />
             <button
               type="button"
-              onClick={() => setQty(qty + 1)}
+              onClick={() => {
+                qty < cart.Ticket.stock && setQty(qty + 1);
+              }}
               className="px-3 py-1 bg-gray-300 rounded-r-lg border-[1px] focus:outline-none"
             >
               +
@@ -87,13 +101,15 @@ export default function Cart({
           </div>
           <p className="text-sm font-semibold">
             Price: Rp.{' '}
-            {discountPrice(
-              cart.Ticket.price,
-              cart.Ticket.discount_price,
-              cart.Ticket.disc_start_date,
-              cart.Ticket.disc_end_date,
-              cart.quantity,
-            ).tag}
+            {
+              discountPrice(
+                cart.Ticket.price,
+                cart.Ticket.discount_price,
+                cart.Ticket.disc_start_date,
+                cart.Ticket.disc_end_date,
+                cart.quantity,
+              ).tag
+            }
           </p>
           <button
             type="button"

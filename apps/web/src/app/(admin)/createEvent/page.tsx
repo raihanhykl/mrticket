@@ -4,6 +4,7 @@ import { addEventAction } from '@/action/event.action';
 import { eventSchema } from '@/schemas/event.schemas';
 import { ErrorMessage } from '@hookform/error-message';
 import { zodResolver } from '@hookform/resolvers/zod';
+import { log } from 'console';
 import { useRouter } from 'next/navigation';
 // import { useRouter } from 'next/router';
 import React, { useState } from 'react';
@@ -41,9 +42,10 @@ export default function Page() {
     name: 'tickets',
   });
 
+  const router = useRouter();
+
   const onSubmit = async (values: z.infer<typeof eventSchema>) => {
     try {
-      const router = useRouter();
       const ticket = values.tickets;
       delete values.tickets;
       // const dor = values.location;
@@ -71,6 +73,8 @@ export default function Page() {
       // if(selectedFile && ticket) await addEventAction(data, ticket);
       if (ticket) {
         const res = await addEventAction(formData, ticket);
+        console.log(res);
+
         // if (res?.success) {
         router.push('/events');
         // } else {
@@ -79,6 +83,7 @@ export default function Page() {
       }
     } catch (err) {
       console.error(err);
+      console.log('gagal');
     }
   };
 

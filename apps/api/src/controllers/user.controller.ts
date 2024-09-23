@@ -11,6 +11,14 @@ export class UserController {
       next(error);
     }
   }
+  async getUserVerif(req: Request, res: Response, next: NextFunction) {
+    try {
+      const data = await UserService.getUserVerif(req);
+      return res.send(responseHandle('Success Get User', data));
+    } catch (error) {
+      next(error);
+    }
+  }
   async addToCart(req: Request, res: Response, next: NextFunction) {
     try {
       const data = await UserService.addToCart(req);
@@ -76,6 +84,15 @@ export class UserController {
     try {
       const data = await UserService.updateCart(req);
       return res.send(responseHandle('Success Update Cart', data));
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  async deleteCart(req: Request, res: Response, next: NextFunction) {
+    try {
+      const data = await UserService.deleteCart(req);
+      return res.send(responseHandle('Success Delete Cart', data));
     } catch (error) {
       next(error);
     }

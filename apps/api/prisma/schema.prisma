@@ -93,10 +93,12 @@ model Review {
   review String
   rating Int
 
-  User    User?  @relation(fields: [userId], references: [id])
-  userId  Int?
-  Event   Event? @relation(fields: [eventId], references: [id])
-  eventId Int?
+  User          User        @relation(fields: [userId], references: [id])
+  userId        Int
+  Event         Event       @relation(fields: [eventId], references: [id])
+  eventId       Int
+  Transaction   Transaction @relation(fields: [transactionId], references: [id])
+  transactionId Int
 
   @@map("reviews")
 }
@@ -148,6 +150,7 @@ model Transaction {
   // Voucher   Voucher? @relation(fields: [voucherId], references: [id])
   // voucherId Int?
 
+  Review        Review[]
   User          User?        @relation(fields: [userId], references: [id])
   userId        Int?
   UserVoucher   UserVoucher? @relation(fields: [userVoucherId], references: [id])
